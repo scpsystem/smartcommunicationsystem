@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Pillow – Sistem Rekod Komunikasi AAC + NFC</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --forest: #2D4A43;
+    --forest-dark: #1e332e;
+    --forest-light: #3d6158;
+    --cream: #F9F8F3;
+    --cream-dark: #F0EFE8;
+    --cream-border: #E4E1D6;
+    --red-alert: #C0392B;
+    --amber: #D68910;
+    --text-main: #1a2420;
+    --text-muted: #6b7b77;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text-main);
+    min-height: 100vh;
+    margin: 0;
+  }
+  h1,h2,h3,h4,h5 { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+  /* ---- SCROLLBAR ---- */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--cream-dark); }
+  ::-webkit-scrollbar-thumb { background: #bfbdb5; border-radius: 3px; }
+
+  /* ---- BUTTONS ---- */
+  .btn-primary {
+    background: var(--forest);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 22px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.18s, transform 0.1s;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .btn-primary:hover { background: var(--forest-dark); transform: translateY(-1px); }
+  .btn-primary:active { transform: scale(0.97); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--forest);
+    border: 1.5px solid var(--forest);
+    border-radius: 10px;
+    padding: 9px 18px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .btn-secondary:hover { background: #edf3f1; }
+
+  .btn-danger {
+    background: #fdf0ee;
+    color: var(--red-alert);
+    border: 1.5px solid #f5c6c0;
+    border-radius: 10px;
+    padding: 9px 18px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .btn-danger:hover { background: #fbe0dc; }
+
+  .btn-ghost {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 13px;
+    cursor: pointer;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: background 0.12s, color 0.12s;
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-ghost:hover { background: var(--cream-border); color: var(--text-main); }
+
+  /* ---- TABS ---- */
+  .tab-nav {
+    display: flex;
+    gap: 4px;
+    background: var(--cream-dark);
+    border-bottom: 1px solid var(--cream-border);
+    padding: 0 20px;
+    overflow-x: auto;
+  }
+  .tab-btn {
+    padding: 12px 18px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .tab-btn:hover { color: var(--forest); }
+  .tab-btn.active { color: var(--forest); border-bottom-color: var(--forest); }
+  .tab-btn .tab-icon { font-size: 17px; }
+
+  /* ---- CARDS ---- */
+  .card {
+    background: #fff;
+    border: 1px solid var(--cream-border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .card-sm {
+    background: #fff;
+    border: 1px solid var(--cream-border);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+
+  /* ---- COMM BUTTONS ---- */
+  .comm-btn {
+    background: #fff;
+    border: 2px solid var(--cream-border);
+    border-radius: 14px;
+    padding: 18px 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s, background 0.15s;
+    user-select: none;
+    text-align: center;
+  }
+  .comm-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(45,74,67,0.1); border-color: var(--forest-light); }
+  .comm-btn:active { transform: scale(0.96); }
+  .comm-btn.priority { border-color: #f5a89b; background: #fff8f7; }
+  .comm-btn.priority:hover { border-color: var(--red-alert); box-shadow: 0 4px 16px rgba(192,57,43,0.12); }
+  .comm-btn.active-scan {
+    border-color: var(--forest);
+    background: #edf5f2;
+    box-shadow: 0 0 0 3px rgba(45,74,67,0.18);
+    animation: pulse-green 0.6s ease;
+  }
+  @keyframes pulse-green {
+    0% { box-shadow: 0 0 0 0 rgba(45,74,67,0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(45,74,67,0); }
+    100% { box-shadow: 0 0 0 3px rgba(45,74,67,0.18); }
+  }
+  .comm-icon { font-size: 36px; line-height: 1; }
+  .comm-label { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13px; color: var(--text-main); line-height: 1.3; }
+  .comm-sub { font-size: 11px; color: var(--text-muted); }
+
+  /* ---- ALERT BANNER ---- */
+  .alert-info { background: #EBF4F1; border: 1px solid #a4d4c6; border-radius: 10px; padding: 12px 16px; font-size: 14px; color: var(--forest-dark); display: flex; align-items: center; gap: 10px; }
+  .alert-warn { background: #FEF9E7; border: 1px solid #f8d86a; border-radius: 10px; padding: 12px 16px; font-size: 14px; color: #7d6608; display: flex; align-items: center; gap: 10px; }
+  .alert-danger { background: #FDEDEC; border: 1px solid #f5b7b1; border-radius: 10px; padding: 12px 16px; font-size: 14px; color: #922b21; display: flex; align-items: center; gap: 10px; }
+  .alert-success { background: #EAF4EA; border: 1px solid #a9d8a9; border-radius: 10px; padding: 12px 16px; font-size: 14px; color: #1e6e23; display: flex; align-items: center; gap: 10px; }
+
+  /* ---- BADGE ---- */
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: 0.5px; text-transform: uppercase; }
+  .badge-green { background: #d0f0e0; color: #0e5c30; }
+  .badge-red { background: #fde8e6; color: #8c1d14; }
+  .badge-amber { background: #fdefd3; color: #7d4c0a; }
+  .badge-blue { background: #daeeff; color: #0c3d70; }
+  .badge-gray { background: var(--cream-border); color: var(--text-muted); }
+  .badge-forest { background: #d4e8e4; color: var(--forest-dark); }
+
+  /* ---- INPUT ---- */
+  input[type=text], input[type=email], input[type=password], textarea, select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--cream-border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    background: #fff;
+    color: var(--text-main);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--forest); }
+
+  /* ---- TOGGLE ---- */
+  .toggle-wrap { display: flex; align-items: center; gap: 10px; }
+  .toggle { position: relative; width: 46px; height: 26px; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute; inset: 0;
+    background: var(--cream-border);
+    border-radius: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .toggle-slider:before {
+    content: '';
+    position: absolute;
+    width: 20px; height: 20px;
+    left: 3px; top: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .toggle input:checked + .toggle-slider { background: var(--forest); }
+  .toggle input:checked + .toggle-slider:before { transform: translateX(20px); }
+
+  /* ---- TABLE ---- */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table th { text-align: left; padding: 10px 14px; background: var(--cream-dark); color: var(--text-muted); font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--cream-border); }
+  .data-table td { padding: 11px 14px; border-bottom: 1px solid #f0ede3; vertical-align: middle; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: #f9f8f3; }
+  .data-table-wrap { overflow-x: auto; border: 1px solid var(--cream-border); border-radius: 12px; }
+
+  /* ---- NFC SCAN AREA ---- */
+  .nfc-area {
+    border: 2.5px dashed var(--cream-border);
+    border-radius: 16px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: var(--cream-dark);
+    text-align: center;
+    min-height: 160px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .nfc-area.active { border-color: var(--forest); background: #EBF4F1; }
+  .nfc-pulse {
+    animation: nfcpulse 1.8s ease-in-out infinite;
+  }
+  @keyframes nfcpulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.08); }
+  }
+
+  /* ---- MINI BAR CHART ---- */
+  .mini-bar { display: flex; align-items: flex-end; gap: 4px; height: 60px; }
+  .mini-bar-col { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .mini-bar-fill { width: 24px; background: var(--forest); border-radius: 4px 4px 0 0; transition: height 0.3s ease; min-height: 2px; }
+  .mini-bar-lbl { font-size: 9px; color: var(--text-muted); font-family: 'DM Sans', sans-serif; white-space: nowrap; }
+
+  /* ---- MODAL ---- */
+  .modal-bg {
+    position: fixed; inset: 0;
+    background: rgba(20,30,28,0.45);
+    z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(20,30,28,0.2);
+    position: relative;
+  }
+
+  /* ---- HEADER ---- */
+  .app-header {
+    background: var(--forest);
+    color: white;
+    padding: 0 24px;
+    height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(20,30,28,0.18);
+  }
+
+  /* ---- STUDENT CARDS ---- */
+  .student-card {
+    background: #fff;
+    border: 1px solid var(--cream-border);
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  /* ---- PAYLOAD CODE ---- */
+  .payload-box {
+    background: var(--cream-dark);
+    border: 1px solid var(--cream-border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--text-main);
+    word-break: break-all;
+    position: relative;
+  }
+
+  /* ---- PAGE VIEW ---- */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ---- STAT CARD ---- */
+  .stat-box { background: var(--cream-dark); border-radius: 10px; padding: 14px 16px; border: 1px solid var(--cream-border); }
+  .stat-num { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 26px; font-weight: 800; color: var(--forest-dark); }
+  .stat-lbl { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  /* ---- LOGIN PAGE ---- */
+  .login-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cream);
+    padding: 24px;
+  }
+  .login-card {
+    background: #fff;
+    border: 1px solid var(--cream-border);
+    border-radius: 20px;
+    padding: 40px 36px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 4px 30px rgba(45,74,67,0.07);
+  }
+
+  /* ---- SECTION HEADER ---- */
+  .sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .sec-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* ---- AVATAR ---- */
+  .avatar { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 16px; background: #d4e8e4; color: var(--forest-dark); flex-shrink: 0; }
+
+  /* ---- SCROLLABLE CONTENT ---- */
+  .main-content { padding: 24px; max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+
+  /* ---- FORM GROUP ---- */
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 13px; color: var(--text-main); }
+
+  /* Responsive grid */
+  @media (max-width: 600px) {
+    .comm-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .stat-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .app-header .header-title { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================
+     APP STATE (JS)
+     ============================ -->
+<script>
+// ---------- STATE ----------
+const APP = {
+  loggedIn: false,
+  currentUser: { name: 'Pn. Aminah Hassan', role: 'GURU', email: 'guru@smartpillow.edu.my' },
+  activeTab: 'utama',
+  nfcScanning: false,
+  nfcSupported: ('NDEFReader' in window),
+  activeStudent: null,
+  students: [],
+  commLog: [],
+  modalOpen: false,
+  editingStudent: null,
+  nfcFormatJSON: false,
+};
+
+// Communication buttons definition
+const COMM_BUTTONS = [
+  { id: 'makan_minum', label: 'Saya nak makan / minum', icon: '🍽️', desc: 'Lapar atau dahaga', priority: false },
+  { id: 'saya_nak',    label: 'Saya nak',                icon: '🙋', desc: 'Keinginan umum',  priority: false },
+  { id: 'saya_taknak', label: 'Saya taknak',             icon: '🙅', desc: 'Menolak',         priority: false },
+  { id: 'tolong',      label: 'Tolong saya',             icon: '🆘', desc: 'Perlu bantuan',   priority: true  },
+  { id: 'ya',          label: 'Ya',                      icon: '✅', desc: 'Bersetuju',       priority: false },
+  { id: 'tidak',       label: 'Tidak',                   icon: '❌', desc: 'Tidak bersetuju', priority: false },
+  { id: 'tandas',      label: 'Saya nak ke tandas',      icon: '🚽', desc: 'Keperluan tandas',priority: false },
+  { id: 'sakit',       label: 'Saya sakit / tak selesa', icon: '🤒', desc: 'Tidak sihat',     priority: true  },
+];
+
+const TTS_PHRASES = {
+  makan_minum: 'Saya nak makan atau minum.',
+  saya_nak:    'Saya nak sesuatu.',
+  saya_taknak: 'Saya taknak.',
+  tolong:      'Tolong saya! Saya perlukan bantuan.',
+  ya:          'Ya.',
+  tidak:       'Tidak.',
+  tandas:      'Saya nak ke tandas.',
+  sakit:       'Saya sakit atau tidak selesa.',
+};
+
+function saveState() {
+  localStorage.setItem('sp_students', JSON.stringify(APP.students));
+  localStorage.setItem('sp_log', JSON.stringify(APP.commLog));
+  localStorage.setItem('sp_activeStudent', JSON.stringify(APP.activeStudent));
+}
+
+function loadState() {
+  try {
+    const s = localStorage.getItem('sp_students');
+    if (s) APP.students = JSON.parse(s);
+    const l = localStorage.getItem('sp_log');
+    if (l) APP.commLog = JSON.parse(l);
+    const a = localStorage.getItem('sp_activeStudent');
+    if (a) APP.activeStudent = JSON.parse(a);
+    if (!APP.activeStudent && APP.students.length > 0) {
+      APP.activeStudent = APP.students.find(s => s.active) || APP.students[0];
+    }
+  } catch(e) {}
+}
+
+function speak(text) {
+  if (!text) return;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ms-MY';
+  u.rate = 0.9;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+
+function handleCommTrigger(id) {
+  const btn = COMM_BUTTONS.find(b => b.id === id);
+  if (!btn) return;
+  speak(TTS_PHRASES[id] || btn.label);
+  APP.commLog.unshift({
+    id, label: btn.label, icon: btn.icon,
+    student: APP.activeStudent ? APP.activeStudent.name : 'Tiada murid aktif',
+    timestamp: new Date().toISOString(),
+  });
+  if (APP.commLog.length > 200) APP.commLog = APP.commLog.slice(0, 200);
+  saveState();
+  renderActiveTab();
+  // Highlight button
+  document.querySelectorAll('.comm-btn').forEach(el => el.classList.remove('active-scan'));
+  const el = document.querySelector(`.comm-btn[data-id="${id}"]`);
+  if (el) { el.classList.add('active-scan'); setTimeout(() => el.classList.remove('active-scan'), 2500); }
+}
+
+function timestampToLocal(ts) {
+  return new Date(ts).toLocaleString('ms-MY', { dateStyle: 'short', timeStyle: 'short' });
+}
+function todayLogs() {
+  const today = new Date().toDateString();
+  return APP.commLog.filter(l => new Date(l.timestamp).toDateString() === today);
+}
+
+// ---- NFC ----
+let nfcReader = null;
+async function startNFC() {
+  if (!APP.nfcSupported) { alert('WebNFC tidak disokong pada peranti/pelayar ini. Guna butang simulasi di bawah.'); return; }
+  try {
+    nfcReader = new NDEFReader();
+    await nfcReader.scan();
+    APP.nfcScanning = true;
+    nfcReader.addEventListener('reading', ({ message }) => {
+      for (const record of message.records) {
+        if (record.recordType === 'text') {
+          const decoder = new TextDecoder(record.encoding || 'utf-8');
+          const text = decoder.decode(record.data).trim();
+          let id = text;
+          try { const obj = JSON.parse(text); id = obj.id || text; } catch(e) {}
+          if (COMM_BUTTONS.find(b => b.id === id)) handleCommTrigger(id);
+        }
+      }
+    });
+  } catch(e) {
+    APP.nfcScanning = false;
+    alert('Gagal memulakan NFC: ' + e.message);
+  }
+  renderActiveTab();
+}
+
+function stopNFC() {
+  APP.nfcScanning = false;
+  nfcReader = null;
+  renderActiveTab();
+}
+
+function exportCSV() {
+  const header = 'Masa,Murid,Komunikasi';
+  const rows = APP.commLog.map(l => `"${timestampToLocal(l.timestamp)}","${l.student}","${l.label}"`);
+  const csv = [header, ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'smart-pillow-log.csv'; a.click();
+}
+
+// ---- STUDENTS ----
+function openAddStudent() {
+  APP.editingStudent = null;
+  document.getElementById('modal-student').style.display = 'flex';
+  document.getElementById('s-name').value = '';
+  document.getElementById('s-diag').value = '';
+  document.getElementById('s-age').value = '';
+  document.getElementById('s-notes').value = '';
+  document.getElementById('modal-title').textContent = 'Tambah Murid Baru';
+}
+function openEditStudent(idx) {
+  APP.editingStudent = idx;
+  const s = APP.students[idx];
+  document.getElementById('modal-student').style.display = 'flex';
+  document.getElementById('s-name').value = s.name;
+  document.getElementById('s-diag').value = s.diagnosis;
+  document.getElementById('s-age').value = s.age;
+  document.getElementById('s-notes').value = s.notes || '';
+  document.getElementById('modal-title').textContent = 'Edit Maklumat Murid';
+}
+function closeStudentModal() {
+  document.getElementById('modal-student').style.display = 'none';
+}
+function saveStudent() {
+  const name = document.getElementById('s-name').value.trim();
+  const diagnosis = document.getElementById('s-diag').value.trim();
+  const age = document.getElementById('s-age').value.trim();
+  const notes = document.getElementById('s-notes').value.trim();
+  if (!name) { alert('Nama murid diperlukan.'); return; }
+  const obj = { name, diagnosis, age, notes, active: false, created: new Date().toISOString() };
+  if (APP.editingStudent !== null) {
+    obj.active = APP.students[APP.editingStudent].active;
+    obj.created = APP.students[APP.editingStudent].created;
+    APP.students[APP.editingStudent] = obj;
+    if (APP.activeStudent && APP.activeStudent.name === obj.name) APP.activeStudent = obj;
+  } else {
+    APP.students.push(obj);
+    if (APP.students.length === 1) { obj.active = true; APP.activeStudent = obj; }
+  }
+  saveState();
+  closeStudentModal();
+  renderActiveTab();
+  renderStudentDropdown();
+}
+function deleteStudent(idx) {
+  if (!confirm('Padam murid ini?')) return;
+  const was = APP.students[idx];
+  APP.students.splice(idx, 1);
+  if (APP.activeStudent && APP.activeStudent.name === was.name) {
+    APP.activeStudent = APP.students.find(s => s.active) || APP.students[0] || null;
+  }
+  saveState();
+  renderActiveTab();
+  renderStudentDropdown();
+}
+function setActiveStudent(idx) {
+  APP.students.forEach((s, i) => s.active = (i === idx));
+  APP.activeStudent = APP.students[idx];
+  saveState();
+  renderActiveTab();
+  renderStudentDropdown();
+}
+
+function renderStudentDropdown() {
+  const dd = document.getElementById('student-dropdown');
+  if (!dd) return;
+  dd.innerHTML = '';
+  if (!APP.activeStudent) {
+    dd.innerHTML = '<option value="">– Tiada murid aktif –</option>';
+    APP.students.forEach((s,i) => {
+      const o = document.createElement('option');
+      o.value = i; o.textContent = s.name + (s.diagnosis ? ` (${s.diagnosis})` : '');
+      dd.appendChild(o);
+    });
+  } else {
+    APP.students.forEach((s,i) => {
+      const o = document.createElement('option');
+      o.value = i;
+      o.textContent = s.name + (s.diagnosis ? ` (${s.diagnosis})` : '');
+      o.selected = s.name === APP.activeStudent.name;
+      dd.appendChild(o);
+    });
+    if (APP.students.length === 0) dd.innerHTML = '<option value="">– Tiada murid –</option>';
+  }
+}
+</script>
+
+<!-- ============================
+     LOGIN PAGE
+     ============================ -->
+<div id="page-login" class="login-wrap">
+  <div class="login-card">
+    <div style="text-align:center; margin-bottom:28px;">
+      <div style="font-size:40px; margin-bottom:10px;">🛏️</div>
+      <h1 style="font-size:22px; font-weight:800; color:var(--forest-dark); margin:0 0 4px;">Smart Pillow</h1>
+      <p style="font-size:13px; color:var(--text-muted); margin:0;">Sistem Rekod Komunikasi AAC + NFC</p>
+    </div>
+    <div style="background:var(--cream-dark); border-radius:12px; padding:20px; margin-bottom:22px;">
+      <h2 style="font-size:16px; font-weight:700; margin:0 0 16px; color:var(--text-main);">Log Masuk</h2>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div class="form-group">
+          <label class="form-label">Emel</label>
+          <input type="email" id="login-email" value="guru@smartpillow.edu.my" placeholder="emel@sekolah.edu.my">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kata Laluan</label>
+          <input type="password" id="login-pass" value="password123" placeholder="••••••••">
+        </div>
+        <button class="btn-primary" style="width:100%; justify-content:center; padding:12px; font-size:15px; border-radius:12px;" onclick="doLogin()">
+          🔐 Log Masuk
+        </button>
+      </div>
+    </div>
+    <p style="text-align:center; font-size:13px; color:var(--text-muted);">Belum ada akaun? <a href="#" onclick="showRegister()" style="color:var(--forest); font-weight:600; text-decoration:none;">Daftar di sini</a></p>
+    <div id="login-error" style="display:none;" class="alert-danger" style="margin-top:12px;"></div>
+
+    <!-- Demo hint -->
+    <div style="margin-top:18px; padding:10px 14px; background:#f0f8f5; border-radius:8px; font-size:12px; color:var(--text-muted); border:1px dashed #b8d9d0;">
+      💡 <strong>Demo:</strong> Emel & kata laluan telah diisi. Tekan Log Masuk untuk meneruskan.
+    </div>
+  </div>
+</div>
+
+<!-- ============================
+     MAIN APP (after login)
+     ============================ -->
+<div id="app-shell" style="display:none; min-height:100vh; display:none;">
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <span style="font-size:24px;">🛏️</span>
+      <div>
+        <div class="header-title" style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:800; font-size:14px; color:#fff; line-height:1.2;">Smart Pillow</div>
+        <div style="font-size:10px; color:rgba(255,255,255,0.65); font-family:'DM Sans',sans-serif;">Sistem AAC + NFC</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <select id="student-dropdown" onchange="changeActiveStudent(this.value)"
+        style="background:rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.25); border-radius:8px; padding:6px 10px; font-size:12px; font-family:'DM Sans',sans-serif; cursor:pointer; max-width:160px;">
+      </select>
+      <span style="background:rgba(255,255,255,0.15); color:#fff; font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; font-family:'Plus Jakarta Sans',sans-serif; letter-spacing:0.5px;">GURU</span>
+      <button class="btn-ghost" style="color:rgba(255,255,255,0.8); font-size:12px;" onclick="doLogout()">⬅️ Log Keluar</button>
+    </div>
+  </header>
+
+  <!-- TAB NAV -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="utama" onclick="switchTab('utama')">
+      <span class="tab-icon">🏠</span> Halaman Utama
+    </button>
+    <button class="tab-btn" data-tab="analisis" onclick="switchTab('analisis')">
+      <span class="tab-icon">📊</span> Analisis Data
+    </button>
+    <button class="tab-btn" data-tab="murid" onclick="switchTab('murid')">
+      <span class="tab-icon">👤</span> Maklumat Murid
+    </button>
+    <button class="tab-btn" data-tab="nfc" onclick="switchTab('nfc')">
+      <span class="tab-icon">📡</span> Tetapan NFC
+    </button>
+  </nav>
+
+  <!-- PAGES -->
+  <div id="tab-utama" class="page active">
+    <div class="main-content">
+
+      <!-- STATUS ALERT -->
+      <div id="status-alert"></div>
+
+      <!-- NFC SCAN AREA -->
+      <div>
+        <div class="sec-head">
+          <span class="sec-title">📡 Komunikasi Semasa</span>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button id="btn-nfc" class="btn-secondary" onclick="toggleNFC()">📡 Mula Imbas NFC</button>
+          </div>
+        </div>
+        <div id="nfc-scan-area" class="nfc-area">
+          <div id="nfc-icon" style="font-size:48px; color:var(--text-muted);">📶</div>
+          <p id="nfc-msg" style="font-size:14px; color:var(--text-muted); margin:0; max-width:320px;">Tiada imbasan lagi. Tekan butang di atas atau dekatkan tag NFC.</p>
+        </div>
+      </div>
+
+      <!-- COMM BUTTONS -->
+      <div>
+        <div class="sec-head">
+          <span class="sec-title">🔘 8 Butang Komunikasi</span>
+          <span style="font-size:12px; color:var(--text-muted);">Ketik untuk simulasi</span>
+        </div>
+        <div class="comm-grid" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:12px;">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div>
+        <div class="sec-head">
+          <span class="sec-title">📈 Statistik Hari Ini</span>
+        </div>
+        <div class="stat-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px;">
+          <div class="stat-box">
+            <div class="stat-num" id="stat-total">0</div>
+            <div class="stat-lbl">Jumlah Hari Ini</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" id="stat-unique">0</div>
+            <div class="stat-lbl">Jenis Unik</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" id="stat-top">–</div>
+            <div class="stat-lbl">Paling Kerap</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-num" id="stat-all">0</div>
+            <div class="stat-lbl">Jumlah Keseluruhan</div>
+          </div>
+        </div>
+        <!-- Mini Chart -->
+        <div class="card-sm" style="margin-bottom:0;">
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Aktiviti Hari Ini (mengikut jenis)</div>
+          <div id="mini-chart" class="mini-bar"></div>
+        </div>
+      </div>
+
+      <!-- LOG TABLE -->
+      <div>
+        <div class="sec-head">
+          <span class="sec-title">📋 Rekod Komunikasi</span>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-secondary" onclick="exportCSV()">📤 Eksport CSV</button>
+            <button class="btn-danger" onclick="clearLog()">🗑️ Padam Semua</button>
+          </div>
+        </div>
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Masa</th>
+                <th>Murid</th>
+                <th>Komunikasi</th>
+                <th style="width:50px;"></th>
+              </tr>
+            </thead>
+            <tbody id="log-tbody">
+              <tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:28px; font-size:13px;">Tiada rekod lagi. Tekan butang komunikasi untuk memulakan.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ANALISIS -->
+  <div id="tab-analisis" class="page">
+    <div class="main-content">
+      <div id="analisis-content"></div>
+    </div>
+  </div>
+
+  <!-- MURID -->
+  <div id="tab-murid" class="page">
+    <div class="main-content">
+      <div class="sec-head" style="margin-bottom:0;">
+        <span class="sec-title">👤 Senarai Murid</span>
+        <button class="btn-primary" onclick="openAddStudent()">➕ Tambah Murid Baru</button>
+      </div>
+      <div id="student-list"></div>
+    </div>
+  </div>
+
+  <!-- NFC SETTINGS -->
+  <div id="tab-nfc" class="page">
+    <div class="main-content">
+      <div class="card" style="margin-bottom:0;">
+        <h2 style="font-size:17px; font-weight:700; margin:0 0 8px;">Tetapan Tag NFC</h2>
+        <p style="font-size:14px; color:var(--text-muted); margin:0 0 20px;">Jana kandungan untuk ditulis ke dalam tag NFC menggunakan aplikasi NFC Tools atau seumpamanya.</p>
+
+        <div style="background:var(--cream-dark); border-radius:10px; padding:14px 16px; margin-bottom:20px; font-size:13px; color:var(--text-muted);">
+          <strong style="color:var(--text-main);">⚙️ Cara menulis tag:</strong>
+          <ol style="margin:8px 0 0 16px; padding:0; display:flex; flex-direction:column; gap:4px;">
+            <li>Muat turun app <em>NFC Tools</em> pada telefon Android/iOS</li>
+            <li>Buka app → pilih "Write" → "Add a record" → "Text"</li>
+            <li>Salin payload dari bawah dan tampal ke dalam medan teks</li>
+            <li>Sentuh telefon ke atas tag NFC untuk menulis</li>
+          </ol>
+        </div>
+
+        <div class="toggle-wrap" style="margin-bottom:20px;">
+          <label class="toggle">
+            <input type="checkbox" id="format-toggle" onchange="toggleFormat()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span style="font-size:14px; font-weight:600;" id="format-lbl">Format: Teks Mudah</span>
+        </div>
+
+        <div id="nfc-payloads" style="display:grid; grid-template-columns:repeat(2,1fr); gap:14px;"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- STUDENT MODAL -->
+<div id="modal-student" class="modal-bg" style="display:none;" onclick="modalBgClick(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <h2 id="modal-title" style="font-size:18px; font-weight:700; margin:0 0 20px;">Tambah Murid Baru</h2>
+    <div style="display:flex; flex-direction:column; gap:14px;">
+      <div class="form-group">
+        <label class="form-label">Nama Penuh *</label>
+        <input type="text" id="s-name" placeholder="Cth: Ahmad bin Zulkifli">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Diagnosis</label>
+        <input type="text" id="s-diag" placeholder="Cth: Autism Spektrum, Down Syndrome">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Umur</label>
+        <input type="text" id="s-age" placeholder="Cth: 9 tahun">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Catatan</label>
+        <textarea id="s-notes" rows="3" placeholder="Maklumat tambahan tentang murid..."></textarea>
+      </div>
+      <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:4px;">
+        <button class="btn-ghost" onclick="closeStudentModal()">Batal</button>
+        <button class="btn-primary" onclick="saveStudent()">💾 Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================
+     RENDER ENGINE (JS)
+     ============================ -->
+<script>
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value.trim();
+  if (!email || !pass) { showLoginError('Sila isi emel dan kata laluan.'); return; }
+  // Simple demo auth
+  APP.loggedIn = true;
+  document.getElementById('page-login').style.display = 'none';
+  document.getElementById('app-shell').style.display = 'block';
+  loadState();
+  renderStudentDropdown();
+  renderActiveTab();
+}
+
+function showRegister() {
+  alert('Fungsi pendaftaran belum tersedia dalam versi demo. Sila hubungi pentadbir sistem.');
+}
+
+function showLoginError(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent = msg;
+  el.style.display = 'flex';
+  el.style.marginTop = '12px';
+}
+
+function doLogout() {
+  APP.loggedIn = false;
+  APP.nfcScanning = false;
+  document.getElementById('app-shell').style.display = 'none';
+  document.getElementById('page-login').style.display = 'flex';
+}
+
+function changeActiveStudent(idx) {
+  if (idx === '' || idx === null) return;
+  setActiveStudent(parseInt(idx));
+}
+
+function switchTab(tab) {
+  APP.activeTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === tab);
+  });
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.toggle('active', p.id === 'tab-' + tab);
+  });
+  renderActiveTab();
+}
+
+function renderActiveTab() {
+  switch(APP.activeTab) {
+    case 'utama':    renderUtama(); break;
+    case 'analisis': renderAnalisis(); break;
+    case 'murid':    renderMurid(); break;
+    case 'nfc':      renderNFC(); break;
+  }
+}
+
+function toggleNFC() {
+  if (APP.nfcScanning) stopNFC();
+  else startNFC();
+}
+
+// ---- RENDER UTAMA ----
+function renderUtama() {
+  // Status alert
+  const alertEl = document.getElementById('status-alert');
+  const studentName = APP.activeStudent ? APP.activeStudent.name : null;
+  if (!APP.nfcSupported) {
+    alertEl.innerHTML = `<div class="alert-warn">⚠️ Pelayar tidak menyokong WebNFC — guna butang simulasi di bawah. WebNFC hanya pada Chrome Android.</div>`;
+  } else if (APP.nfcScanning) {
+    alertEl.innerHTML = `<div class="alert-success">✅ NFC aktif dan sedang mengimbas${studentName ? ` untuk <strong>${studentName}</strong>` : ''}. Dekatkan tag NFC...</div>`;
+  } else {
+    alertEl.innerHTML = `<div class="alert-info">👋 Selamat kembali, ${APP.currentUser.name}!${studentName ? ` Murid aktif: <strong>${studentName}</strong>.` : ' Tiada murid dipilih.'}</div>`;
+  }
+
+  // NFC area
+  const nfcArea = document.getElementById('nfc-scan-area');
+  const nfcIcon = document.getElementById('nfc-icon');
+  const nfcMsg = document.getElementById('nfc-msg');
+  const nfcBtn = document.getElementById('btn-nfc');
+  const lastLog = APP.commLog[0];
+  if (lastLog) {
+    nfcArea.className = 'nfc-area active';
+    nfcIcon.textContent = lastLog.icon;
+    nfcIcon.style.fontSize = '56px';
+    nfcMsg.innerHTML = `<strong style="font-size:16px; color:var(--forest-dark); font-family:'Plus Jakarta Sans',sans-serif;">${lastLog.label}</strong><br><span style="font-size:12px; color:var(--text-muted);">${lastLog.student} · ${timestampToLocal(lastLog.timestamp)}</span>`;
+  } else {
+    nfcArea.className = 'nfc-area' + (APP.nfcScanning ? ' active' : '');
+    nfcIcon.textContent = APP.nfcScanning ? '📡' : '📶';
+    nfcIcon.style.fontSize = '48px';
+    if (APP.nfcScanning) { nfcIcon.classList.add('nfc-pulse'); } else { nfcIcon.classList.remove('nfc-pulse'); }
+    nfcMsg.textContent = APP.nfcScanning ? 'NFC aktif. Menunggu imbasan tag...' : 'Tiada imbasan lagi. Tekan butang di atas atau dekatkan tag NFC.';
+  }
+  if (nfcBtn) {
+    nfcBtn.textContent = APP.nfcScanning ? '⏹ Henti NFC' : '📡 Mula Imbas NFC';
+    nfcBtn.style.background = APP.nfcScanning ? '#fdf0ee' : '';
+    nfcBtn.style.borderColor = APP.nfcScanning ? '#f5b7b1' : '';
+    nfcBtn.style.color = APP.nfcScanning ? '#922b21' : '';
+  }
+
+  // Comm buttons
+  const grid = document.querySelector('.comm-grid');
+  if (grid) {
+    grid.innerHTML = COMM_BUTTONS.map(b => `
+      <button class="comm-btn${b.priority ? ' priority' : ''}" data-id="${b.id}" onclick="handleCommTrigger('${b.id}')">
+        <span class="comm-icon">${b.icon}</span>
+        <span class="comm-label">${b.label}</span>
+        <span class="comm-sub">${b.desc}</span>
+        ${b.priority ? '<span class="badge badge-red" style="font-size:9px; padding:2px 7px;">KEUTAMAAN</span>' : ''}
+      </button>
+    `).join('');
+  }
+
+  // Stats
+  const tl = todayLogs();
+  document.getElementById('stat-total').textContent = tl.length;
+  const unique = new Set(tl.map(l => l.id)).size;
+  document.getElementById('stat-unique').textContent = unique;
+  const counts = {};
+  tl.forEach(l => counts[l.id] = (counts[l.id]||0)+1);
+  const topId = Object.keys(counts).sort((a,b)=>counts[b]-counts[a])[0];
+  const topBtn = topId ? COMM_BUTTONS.find(b=>b.id===topId) : null;
+  document.getElementById('stat-top').textContent = topBtn ? topBtn.icon : '–';
+  document.getElementById('stat-all').textContent = APP.commLog.length;
+
+  // Mini chart
+  const chart = document.getElementById('mini-chart');
+  if (chart) {
+    if (tl.length === 0) {
+      chart.innerHTML = '<span style="font-size:12px; color:var(--text-muted); align-self:center;">Tiada data hari ini.</span>';
+    } else {
+      const max = Math.max(...Object.values(counts), 1);
+      chart.innerHTML = COMM_BUTTONS.map(b => {
+        const c = counts[b.id] || 0;
+        const h = c > 0 ? Math.max(4, Math.round((c/max)*52)) : 2;
+        return `<div class="mini-bar-col">
+          <div class="mini-bar-fill" style="height:${h}px; background:${b.priority ? '#C0392B' : 'var(--forest)'}; opacity:${c>0?1:0.2};"></div>
+          <div class="mini-bar-lbl">${b.icon}</div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Log table
+  const tbody = document.getElementById('log-tbody');
+  if (!tbody) return;
+  if (APP.commLog.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:28px; font-size:13px;">Tiada rekod lagi. Tekan butang komunikasi untuk memulakan.</td></tr>';
+  } else {
+    tbody.innerHTML = APP.commLog.slice(0,50).map((l,i) => `
+      <tr>
+        <td style="color:var(--text-muted); white-space:nowrap;">${timestampToLocal(l.timestamp)}</td>
+        <td><div style="display:flex; align-items:center; gap:6px;"><div class="avatar" style="width:28px; height:28px; font-size:11px;">${l.student.slice(0,2).toUpperCase()}</div>${l.student}</div></td>
+        <td><span style="margin-right:8px;">${l.icon}</span>${l.label}</td>
+        <td><button class="btn-ghost" style="padding:4px 8px; font-size:11px;" onclick="deleteLogEntry(${i})">🗑️</button></td>
+      </tr>
+    `).join('');
+  }
+}
+
+function deleteLogEntry(i) {
+  APP.commLog.splice(i, 1);
+  saveState();
+  renderActiveTab();
+}
+
+function clearLog() {
+  if (!confirm('Padam semua rekod komunikasi?')) return;
+  APP.commLog = [];
+  saveState();
+  renderActiveTab();
+}
+
+// ---- RENDER ANALISIS ----
+function renderAnalisis() {
+  const el = document.getElementById('analisis-content');
+  const studentName = APP.activeStudent ? APP.activeStudent.name : 'Tiada Murid';
+  if (APP.commLog.length === 0) {
+    el.innerHTML = `
+      <div style="text-align:center; padding:60px 20px;">
+        <div style="font-size:64px; margin-bottom:16px; opacity:0.4;">📊</div>
+        <h2 style="font-size:18px; font-weight:700; color:var(--text-muted); margin:0 0 8px;">Belum ada data untuk ${studentName}</h2>
+        <p style="color:var(--text-muted); font-size:14px; margin:0 0 24px;">Mulakan dengan merakam komunikasi murid melalui Halaman Utama.</p>
+        <button class="btn-primary" onclick="switchTab('utama')">🏠 Pergi ke Halaman Utama</button>
+      </div>
+    `;
+    return;
+  }
+
+  // Build analysis
+  const counts = {};
+  COMM_BUTTONS.forEach(b => counts[b.id] = 0);
+  APP.commLog.forEach(l => { if (counts[l.id] !== undefined) counts[l.id]++; });
+  const total = APP.commLog.length;
+  const sorted = [...COMM_BUTTONS].sort((a,b) => counts[b.id]-counts[a.id]);
+  const max = Math.max(...Object.values(counts), 1);
+
+  // By day
+  const byDay = {};
+  APP.commLog.forEach(l => {
+    const d = new Date(l.timestamp).toLocaleDateString('ms-MY');
+    byDay[d] = (byDay[d]||0)+1;
+  });
+  const days = Object.keys(byDay).slice(-7).reverse();
+
+  el.innerHTML = `
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px;">
+      <div class="stat-box"><div class="stat-num">${total}</div><div class="stat-lbl">Jumlah Rekod</div></div>
+      <div class="stat-box"><div class="stat-num">${Object.keys(byDay).length}</div><div class="stat-lbl">Hari Aktif</div></div>
+      <div class="stat-box"><div class="stat-num">${sorted[0].icon}</div><div class="stat-lbl">Paling Kerap: ${sorted[0].label.slice(0,18)}…</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <div class="sec-title" style="margin-bottom:16px;">Frekuensi Komunikasi</div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        ${sorted.map(b => {
+          const pct = Math.round((counts[b.id]/max)*100);
+          return `
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="width:28px; text-align:center; font-size:20px;">${b.icon}</span>
+              <span style="font-size:13px; min-width:180px; color:var(--text-main);">${b.label}</span>
+              <div style="flex:1; background:var(--cream-border); border-radius:4px; height:14px; overflow:hidden;">
+                <div style="width:${pct}%; background:${b.priority?'var(--red-alert)':'var(--forest)'}; height:100%; border-radius:4px; transition:width 0.4s ease;"></div>
+              </div>
+              <span style="font-size:13px; font-weight:700; min-width:32px; text-align:right; color:var(--forest-dark);">${counts[b.id]}</span>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-title" style="margin-bottom:16px;">Aktiviti 7 Hari Terakhir</div>
+      ${days.length === 0 ? '<p style="color:var(--text-muted); font-size:13px;">Tiada data.</p>' : `
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          ${days.map(d => {
+            const c = byDay[d];
+            const mx = Math.max(...Object.values(byDay));
+            const pct = Math.round((c/mx)*100);
+            return `<div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-size:12px; color:var(--text-muted); min-width:90px;">${d}</span>
+              <div style="flex:1; background:var(--cream-border); border-radius:4px; height:14px;">
+                <div style="width:${pct}%; background:var(--forest); height:100%; border-radius:4px;"></div>
+              </div>
+              <span style="font-size:12px; font-weight:700; color:var(--forest-dark); min-width:24px; text-align:right;">${c}</span>
+            </div>`;
+          }).join('')}
+        </div>
+      `}
+    </div>
+  `;
+}
+
+// ---- RENDER MURID ----
+function renderMurid() {
+  const el = document.getElementById('student-list');
+  if (APP.students.length === 0) {
+    el.innerHTML = `
+      <div style="text-align:center; padding:60px 20px;">
+        <div style="font-size:56px; opacity:0.3; margin-bottom:14px;">👤</div>
+        <h2 style="font-size:17px; font-weight:700; color:var(--text-muted); margin:0 0 8px;">Tiada murid didaftarkan</h2>
+        <p style="font-size:14px; color:var(--text-muted); margin:0 0 20px;">Daftarkan murid untuk mula merekod komunikasi mereka.</p>
+        <button class="btn-primary" onclick="openAddStudent()">➕ Tambah Murid Pertama</button>
+      </div>
+    `;
+    return;
+  }
+  el.innerHTML = APP.students.map((s, i) => `
+    <div class="student-card" style="margin-bottom:12px;">
+      <div style="display:flex; gap:14px; align-items:flex-start; flex:1;">
+        <div class="avatar" style="width:52px; height:52px; font-size:18px;">${s.name.slice(0,2).toUpperCase()}</div>
+        <div>
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+            <span style="font-family:'Plus Jakarta Sans',sans-serif; font-weight:700; font-size:16px;">${s.name}</span>
+            <span class="badge ${s.active ? 'badge-green' : 'badge-gray'}">${s.active ? '● AKTIF' : '○ TIDAK AKTIF'}</span>
+          </div>
+          <div style="font-size:13px; color:var(--text-muted);">
+            ${s.diagnosis ? `<span class="badge badge-blue" style="margin-right:6px;">${s.diagnosis}</span>` : ''}
+            ${s.age ? `<span style="margin-right:8px;">📅 ${s.age}</span>` : ''}
+          </div>
+          ${s.notes ? `<div style="font-size:12px; color:var(--text-muted); margin-top:6px; font-style:italic;">${s.notes}</div>` : ''}
+          <div style="font-size:11px; color:var(--cream-border); margin-top:4px; color:#bbb;">Didaftar: ${new Date(s.created).toLocaleDateString('ms-MY')}</div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-end;">
+        ${!s.active ? `<button class="btn-secondary" style="white-space:nowrap; font-size:12px;" onclick="setActiveStudent(${i})">⭐ Jadikan Aktif</button>` : ''}
+        <button class="btn-ghost" onclick="openEditStudent(${i})">✏️ Edit</button>
+        <button class="btn-ghost" style="color:var(--red-alert);" onclick="deleteStudent(${i})">🗑️ Padam</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ---- RENDER NFC ----
+function renderNFC() {
+  const container = document.getElementById('nfc-payloads');
+  const isJSON = APP.nfcFormatJSON;
+  document.getElementById('format-lbl').textContent = 'Format: ' + (isJSON ? 'JSON' : 'Teks Mudah');
+  container.innerHTML = COMM_BUTTONS.map(b => {
+    const payload = isJSON
+      ? JSON.stringify({ id: b.id, label: b.label, icon: b.icon }, null, 2)
+      : b.id;
+    return `
+      <div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+          <span style="font-size:13px; font-weight:600; font-family:'Plus Jakarta Sans',sans-serif;">${b.icon} ${b.label}</span>
+          ${b.priority ? '<span class="badge badge-red">Keutamaan</span>' : ''}
+        </div>
+        <div class="payload-box">
+          <pre style="margin:0; font-size:12px; white-space:pre-wrap; padding-right:48px;">${payload}</pre>
+          <button onclick="copyPayload(this, ${JSON.stringify(payload)})" 
+            style="position:absolute; top:8px; right:8px; padding:4px 10px; background:var(--forest); color:white; border:none; border-radius:6px; font-size:11px; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif; font-weight:600;">
+            Salin
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleFormat() {
+  APP.nfcFormatJSON = document.getElementById('format-toggle').checked;
+  renderNFC();
+}
+
+function copyPayload(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Disalin!';
+    btn.style.background = '#27ae60';
+    setTimeout(() => { btn.textContent = 'Salin'; btn.style.background = 'var(--forest)'; }, 1800);
+  });
+}
+
+function modalBgClick(e) {
+  if (e.target === document.getElementById('modal-student')) closeStudentModal();
+}
+
+// ---- SEED DEMO DATA ----
+function seedDemo() {
+  if (APP.students.length === 0) {
+    APP.students = [
+      { name: 'Ahmad Naufal bin Zulkifli', diagnosis: 'Autism Spektrum', age: '9 tahun', notes: 'Mudah teruja apabila lapar. Sukai warna biru.', active: true, created: new Date().toISOString() },
+      { name: 'Nur Aisyah binti Ramli', diagnosis: 'Down Syndrome', age: '11 tahun', notes: 'Suka muzik. Komunikasi terbaik pada waktu pagi.', active: false, created: new Date().toISOString() },
+    ];
+    APP.activeStudent = APP.students[0];
+    saveState();
+    renderStudentDropdown();
+  }
+}
+
+// INIT
+document.addEventListener('DOMContentLoaded', () => {
+  // Pre-fill login
+});
+
+// Override doLogin to also seed
+const _orig_doLogin = doLogin;
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value.trim();
+  if (!email || !pass) { showLoginError('Sila isi emel dan kata laluan.'); return; }
+  APP.loggedIn = true;
+  document.getElementById('page-login').style.display = 'none';
+  document.getElementById('app-shell').style.display = 'block';
+  loadState();
+  seedDemo();
+  renderStudentDropdown();
+  renderActiveTab();
+}
+</script>
+
+</body>
+</html>
