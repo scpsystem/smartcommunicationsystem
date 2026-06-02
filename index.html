@@ -3,25 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SCP System - Smart Communication Pillow</title>
+  <title>🌼 - SCP System - Smart Communication Pillow</title>
   
-  <!-- Google Fonts & Chart.js CDN (Ganti Recharts) -->
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
   <style>
-    /* ─── STYLE UTAMA & TEMA (Sora Font) ─── */
+    /* ─── STYLE UTAMA & TEMA ─── */
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Sora', sans-serif; }
     body { background-color: #F4F9FF; color: #1A2E28; font-size: 14px; }
     
-    /* Layout Auth[cite: 10, 12] */
     .auth-wrap { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #E1F5EE; }
     .auth-card { background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .auth-logo { text-align: center; margin-bottom: 20px; }
     .auth-title { font-size: 22px; color: #085041; }
     .auth-sub { font-size: 12px; color: #7A9B93; }
     
-    /* Layout App Shell[cite: 6] */
     #app-shell { display: none; min-height: 100vh; grid-template-columns: 240px 1fr; }
     aside.sidebar { background: #085041; color: white; padding: 20px 0; display: flex; flex-direction: column; }
     .sidebar-logo { padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
@@ -29,14 +30,12 @@
     .nav-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 20px; background: none; border: none; color: #CED0F8; text-align: left; cursor: pointer; font-size: 13px; }
     .nav-item.active, .nav-item:hover { background: rgba(255,255,255,0.1); color: white; }
     
-    /* Main Content Area[cite: 6] */
     .main { display: flex; flex-direction: column; background: #F4F9FF; }
     header.topbar { background: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E1F5EE; }
     .content { padding: 20px; flex: 1; }
     .page { display: none; }
     .page.active { display: block; }
     
-    /* Reusable UI Components */
     .card { background: white; padding: 20px; border-radius: 10px; border: 1px solid #D8EDE7; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
     .card-title { font-size: 14px; font-weight: 700; color: #085041; margin-bottom: 14px; }
     .badge { padding: 4px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
@@ -46,14 +45,12 @@
     .tag-blue { background: #E5F1FD; color: #185FA5; }
     .tag-amber { background: #FFF3EF; color: #BA7517; }
     
-    /* AAC Grid Styling[cite: 4] */
     .aac-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
     .aac-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; border-radius: 8px; border: 2px solid; cursor: pointer; transition: transform 0.1s; text-align: center; }
     .aac-btn:active { transform: scale(0.95); }
     .aac-emoji { font-size: 28px; margin-bottom: 8px; }
     .aac-text { font-size: 12px; font-weight: 600; }
     
-    /* Forms & Buttons */
     .form-group { margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px; }
     .form-group label { font-size: 12px; font-weight: 600; color: #085041; }
     input, select { padding: 8px 12px; border: 1px solid #7A9B93; border-radius: 6px; font-size: 13px; }
@@ -64,28 +61,24 @@
     .btn-outline { border: 1px solid #7A9B93; background: transparent; }
     .btn-sm { padding: 4px 10px; font-size: 11px; }
 
-    /* NFC Scanner Box[cite: 11] */
     .nfc-panel { border: 1px dashed #1D9E75; padding: 20px; text-align: center; border-radius: 8px; background: #F2FCF8; }
     .nfc-panel.scanning { background: #1D9E75; color: white; border-style: solid; }
     .nfc-title { font-weight: 700; margin: 8px 0 4px; }
     .nfc-sub { font-size: 11px; color: #7A9B93; }
-    .scanning .nfc-sub { color: rgba(255,255,255,0.8); }
 
-    /* Table[cite: 8] */
     table { width: 100%; border-collapse: collapse; text-align: left; }
     th, td { padding: 10px; border-bottom: 1px solid #E1F5EE; }
     th { font-size: 11px; text-transform: uppercase; color: #7A9B93; }
     
-    /* Toast Notif[cite: 6] */
     #toast { position: fixed; bottom: 20px; right: 20px; background: #1D9E75; color: white; padding: 12px 24px; border-radius: 6px; display: none; z-index: 999; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .loading-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); display:none; justify-content:center; align-items:center; z-index:9999; font-weight:bold; color:#085041; }
   </style>
 </head>
 <body>
 
-  <!-- 📥 TOAST NOTIFICATION[cite: 6] -->
-  <div id="toast">✓ Log disimpan</div>
+  <div id="loading-screen" class="loading-overlay">Sila tunggu, memuatkan data...</div>
+  <div id="toast">✓ Berjaya</div>
 
-  <!-- 🔐 1. HALAMAN LOG MASUK[cite: 10] -->
   <div id="page-login" class="auth-wrap" style="display: flex;">
     <div class="auth-card">
       <div class="auth-logo">
@@ -93,28 +86,30 @@
         <p class="auth-sub">Smart Communication Pillow</p>
       </div>
       <form onsubmit="handleLogin(event)">
-        <div class="form-group"><label>Emel</label><input type="email" id="login-email" value="guru@scp.com" required></div>
-        <div class="form-group"><label>Kata Laluan</label><input type="password" id="login-pass" value="123456" required></div>
+        <div class="form-group"><label>Emel</label><input type="email" id="login-email" placeholder="nama@email.com" required></div>
+        <div class="form-group"><label>Kata Laluan</label><input type="password" id="login-pass" placeholder="••••••••" required></div>
         <button type="submit" class="btn btn-primary btn-full">Log Masuk</button>
       </form>
-      <p style="text-align:center; font-size:12px; margin-top:15px;">Belum ada akaun? <a href="#" onclick="switchAuth('register')">Daftar</a></p>
+      <p style="text-align:center; font-size:12px; margin-top:15px;">Belum ada akaun? <a href="#" onclick="switchAuth('register')">Daftar Sini</a></p>
     </div>
   </div>
 
-  <!-- 📝 2. HALAMAN DAFTAR AKAUN[cite: 12] -->
   <div id="page-register" class="auth-wrap" style="display: none;">
     <div class="auth-card">
       <div class="auth-logo">
         <h1 class="auth-title">Daftar Akaun</h1>
-        <p class="auth-sub">Smart Communication Pillow System</p>
+        <p class="auth-sub">Sila pilih peranan anda dengan betul</p>
       </div>
       <form onsubmit="handleRegister(event)">
-        <div class="form-group"><label>Nama Penuh</label><input type="text" required></div>
-        <div class="form-group"><label>Emel</label><input type="email" required></div>
-        <div class="form-group"><label>Kata Laluan</label><input type="password" required></div>
+        <div class="form-group"><label>Nama Penuh</label><input type="text" id="reg-name" required></div>
+        <div class="form-group"><label>Emel</label><input type="email" id="reg-email" required></div>
+        <div class="form-group"><label>Kata Laluan (Min 6 aksara)</label><input type="password" id="reg-pass" required></div>
         <div class="form-group">
-          <label>Peranan</label>
-          <select id="reg-role"><option>Guru</option><option>Ibu Bapa</option></select>
+          <label>Peranan Pengguna</label>
+          <select id="reg-role">
+            <option value="Guru">Guru (Urus semua murid)</option>
+            <option value="Ibu Bapa">Ibu Bapa (Urus anak sendiri)</option>
+          </select>
         </div>
         <button type="submit" class="btn btn-primary btn-full">Buat Akaun</button>
       </form>
@@ -122,36 +117,34 @@
     </div>
   </div>
 
-  <!-- 💻 3. APP SHELL UTAMA (SELEPAS LOGIN)[cite: 6] -->
   <div id="app-shell">
-    <!-- Sidebar Kiri[cite: 6] -->
     <aside class="sidebar">
       <div class="sidebar-logo">
         <div style="font-weight:700; font-size:16px;">💬 SCP System</div>
-        <div style="font-size:10px; color:#7A9B93;">AAC Platform</div>
+        <div id="user-display-role" style="font-size:10px; color:#7A9B93; text-transform:uppercase;">Memuatkan...</div>
       </div>
       <nav>
         <div class="nav-section">Utama</div>
         <button class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">▤ Dashboard</button>
         <button class="nav-item" id="nav-analysis" onclick="switchTab('analysis')">📊 Analisis Data</button>
         
-        <div class="nav-section">Pengurusan</div>
-        <button class="nav-item" id="nav-students" onclick="switchTab('students')">👥 Pelajar</button>
+        <div class="nav-section">Urusan Profil</div>
+        <button class="nav-item" id="nav-students" onclick="switchTab('students')">👥 Kemasukan Murid</button>
         
-        <!-- Dropdown Senarai Pelajar Aktif[cite: 6] -->
-        <div style="padding: 10px 20px;">
-          <select id="sidebar-student-select" onchange="changeActiveStudent(this.value)" style="width:100%; background:#063b30; color:white; border:none; padding:6px;">
-            <!-- Dimuatkan secara dinamik -->
+        <div class="nav-section" id="sidebar-list-title">Pilih Murid</div>
+        <div style="padding: 0 20px;">
+          <select id="sidebar-student-select" onchange="changeActiveStudent(this.value)" style="width:100%; background:#063b30; color:white; border:none; padding:8px; border-radius:4px;">
+            <option value="">-- Tiada Murid --</option>
           </select>
         </div>
       </nav>
       
       <div style="margin-top:auto; padding:0 20px;">
-        <button class="nav-item" onclick="handleLogout()" style="color:#F5C4B3;">🚪 Log Keluar</button>
+        <div id="user-display-name" style="font-size:11px; color:#CED0F8; margin-bottom:8px; padding-left:5px;"></div>
+        <button class="nav-item" onclick="handleLogout()" style="color:#F5C4B3; padding-left:5px;">🚪 Log Keluar</button>
       </div>
     </aside>
 
-    <!-- Kawasan Kandungan Kanan[cite: 6] -->
     <div class="main">
       <header class="topbar">
         <div id="topbar-page-title" style="font-weight:700; font-size:16px;">Dashboard</div>
@@ -160,90 +153,82 @@
 
       <div class="content">
         
-        <!-- 🏠 TAB A: DASHBOARD[cite: 8] -->
         <div id="tab-dashboard" class="page active">
-          <!-- Banner Impak Pelajar[cite: 8] -->
           <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom:16px;">
             <div class="card" style="margin-bottom:0;" id="dashboard-student-banner">
-              <!-- Dynamik Data Murid -->
+              <div style="color:#7A9B93;">Sila pilih atau tambah maklumat murid terlebih dahulu di menu "Kemasukan Murid".</div>
             </div>
             <div class="card" style="background: linear-gradient(135deg, #1D9E75, #085041); border: none; color:white; margin-bottom:0;">
-              <div style="font-size: 11px; color: rgba(255,255,255,0.6);">📅 HARI INI</div>
+              <div style="font-size: 11px; color: rgba(255,255,255,0.6);">📈 TOTAL LOG</div>
               <div style="font-size: 32px; font-weight:700;" id="dash-today-count">0</div>
-              <div style="font-size: 11px; color: rgba(255,255,255,0.7);">komunikasi direkod</div>
+              <div style="font-size: 11px; color: rgba(255,255,255,0.7);">rekod terkumpul</div>
             </div>
           </div>
 
-          <!-- NFC Scanner & Statistik Ringkas[cite: 8] -->
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom:16px;">
             <div class="card" style="margin-bottom:0;">
               <div class="card-title">📡 Pengimbas NFC</div>
               <div id="nfc-panel-box" class="nfc-panel">
                 <div class="nfc-title" id="nfc-status-text">Sedia untuk Mengimbas</div>
-                <div class="nfc-sub" id="nfc-sub-text">Tekan butang untuk aktifkan pengimbas NFC web</div>
+                <div class="nfc-sub" id="nfc-sub-text">Tekan butang untuk fungsi imbasan WebNFC</div>
                 <button class="btn btn-primary btn-sm" style="margin-top:12px;" onclick="toggleNFCScan()" id="nfc-btn">📡 Mula Imbas</button>
               </div>
             </div>
             <div class="card" style="margin-bottom:0;">
-              <div class="card-title">🏆 Tiga Teratas Komunikasi</div>
-              <div id="dash-top-actions" style="font-size: 13px;">Tiada data</div>
+              <div class="card-title">🏆 Kategori Kerap Diguna</div>
+              <div id="dash-top-actions" style="font-size: 13px; color:#7A9B93;">Tiada data log masuk.</div>
             </div>
           </div>
 
-          <!-- AAC Button Grid Card[cite: 4, 8] -->
           <div class="card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
               <div class="card-title" style="margin-bottom:0;">🔲 Grid Komunikasi AAC</div>
               <span class="badge" style="background:#CED0F8; color:#534AB7;">👆 Sentuhan Manual</span>
             </div>
-            <div class="aac-grid" id="aac-buttons-container">
-              <!-- Butang AAC di-render oleh JS[cite: 4] -->
-            </div>
+            <div class="aac-grid" id="aac-buttons-container"></div>
           </div>
 
-          <!-- Jadual Sejarah Log[cite: 8] -->
           <div class="card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
-              <div class="card-title" style="margin-bottom:0;">📋 Sejarah Komunikasi (20 Terkini)</div>
+              <div class="card-title" style="margin-bottom:0;">📋 20 Sejarah Log Terkini (Firestore)</div>
               <div style="display:flex; gap:8px;">
                 <button class="btn btn-outline btn-sm" onclick="downloadCSV()">📥 Eksport CSV</button>
-                <button class="btn btn-danger btn-sm" onclick="clearLogs()">🗑️ Padam Log</button>
+                <button class="btn btn-danger btn-sm" onclick="clearLogs()">🗑️ Bersihkan Log</button>
               </div>
             </div>
             <div style="overflow-x:auto;">
               <table>
-                <thead><tr><th>Masa</th><th>Tindakan</th><th>Kaedah</th></tr></thead>
-                <tbody id="log-table-body"><tr><td colSpan="3" style="text-align:center; color:#7A9B93;">Tiada log</td></tr></tbody>
+                <thead><tr><th>Masa</th><th>Tindakan / Mesej AAC</th><th>Kaedah Input</th></tr></thead>
+                <tbody id="log-table-body"><tr><td colSpan="3" style="text-align:center; color:#7A9B93;">Tiada rekod log</td></tr></tbody>
               </table>
             </div>
           </div>
         </div>
 
-        <!-- 📊 TAB B: ANALISIS (Guna Chart.js) -->
         <div id="tab-analysis" class="page">
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom:16px;">
-            <div class="card"><div class="card-title">📊 Trend Komunikasi (Mengikut Jam)</div><canvas id="chartBar" height="180"></canvas></div>
-            <div class="card"><div class="card-title">🥧 Agihan Jenis Komunikasi</div><canvas id="chartPie" height="180"></canvas></div>
+            <div class="card"><div class="card-title">📊 Kekerapan Mengikut Jam</div><canvas id="chartBar" height="180"></canvas></div>
+            <div class="card"><div class="card-title">🥧 Pembahagian Jenis Komunikasi</div><canvas id="chartPie" height="180"></canvas></div>
           </div>
-          <div class="card"><div class="card-title">📈 Trend Aktiviti Harian</div><canvas id="chartLine" height="100"></canvas></div>
         </div>
 
-        <!-- 👥 TAB C: PENGURUSAN PELAJAR[cite: 6] -->
         <div id="tab-students" class="page">
           <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px;">
             <div>
-              <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;" id="student-cards-container">
-                <!-- Kad pelajar dimasukkan guna JS -->
-              </div>
+              <div class="card-title" id="list-student-header">Senarai Murid</div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;" id="student-cards-container"></div>
             </div>
             <div class="card">
-              <div class="card-title">➕ Tambah Pelajar Baru</div>
+              <div class="card-title" id="form-student-title">Daftar Maklumat Murid</div>
               <form onsubmit="addStudent(event)">
-                <div class="form-group"><label>Nama Penuh</label><input type="text" id="stu-name" placeholder="Nama pelajar" required></div>
+                <div class="form-group"><label>Nama Penuh Murid/Anak</label><input type="text" id="stu-name" placeholder="Masukkan nama" required></div>
                 <div class="form-group">
                   <label>Diagnosis</label>
                   <select id="stu-diag">
-                    <option>Cerebral Palsy</option><option>Down Syndrome</option><option>Autisme</option><option>Lain-lain OKU</option>
+                    <option value="Cerebral Palsy">Cerebral Palsy</option>
+                    <option value="Autisme">Autisme</option>
+                    <option value="Down Syndrome">Down Syndrome</option>
+                    <option value="Lain-lain">Lain-lain</option>
                   </select>
                 </div>
                 <div class="form-group">
@@ -254,8 +239,8 @@
                   <label>Tahap Motor</label>
                   <select id="stu-mot"><option>Tinggi</option><option>Sederhana</option><option>Rendah</option></select>
                 </div>
-                <div class="form-group"><label>Umur</label><input type="number" id="stu-age" placeholder="12" min="1" max="25" required></div>
-                <button type="submit" class="btn btn-primary btn-full">Tambah Pelajar</button>
+                <div class="form-group"><label>Umur (Tahun)</label><input type="number" id="stu-age" placeholder="9" min="1" max="30" required></div>
+                <button type="submit" class="btn btn-primary btn-full">Simpan ke Firebase</button>
               </form>
             </div>
           </div>
@@ -265,24 +250,32 @@
     </div>
   </div>
 
-  <!-- ─── 🧠 JAVASCRIPT LOGIC SYSTEM ─── -->
   <script>
-    // DATA PEMULA SEED (Menggantikan Firebase untuk Demo/Offline fallback)
-    let APP_STATE = {
-      students: [
-        { id: 's1', name: 'Ahmad Zafri', diagnosis: 'Cerebral Palsy', cognitiveLevel: 'Sederhana', motorLevel: 'Rendah', age: 10 },
-        { id: 's2', name: 'Siti Nurhaliza', diagnosis: 'Autisme', cognitiveLevel: 'Tinggi', motorLevel: 'Sederhana', age: 8 }
-      ],
-      logs: [
-        { id: 'l1', studentId: 's1', actionTag: 'saya_nak_makan', actionLabel: 'Saya nak makan/minum', triggerMethod: 'Manual Touch', timestamp: new Date(new Date().setHours(8,0,0)) },
-        { id: 'l2', studentId: 's1', actionTag: 'ke_tandas', actionLabel: 'Saya nak ke tandas', triggerMethod: 'NFC', timestamp: new Date(new Date().setHours(10,15,0)) },
-        { id: 'l3', studentId: 's1', actionTag: 'tolong_saya', actionLabel: 'Tolong saya', triggerMethod: 'NFC', timestamp: new Date() }
-      ],
-      activeStudentId: 's1',
-      nfcScanning: false
+    // ─── 🛠️ KONFIGURASI FIREBASE KAU ───
+    // Masukkan data asal dari fail firebase.js kau kat sini
+    const firebaseConfig = {
+      apiKey: "PASTE_VITE_FIREBASE_API_KEY_KAU_KAT_SINI",
+      authDomain: "PASTE_VITE_FIREBASE_AUTH_DOMAIN_KAU_KAT_SINI",
+      projectId: "PASTE_VITE_FIREBASE_PROJECT_ID_KAU_KAT_SINI",
+      storageBucket: "PASTE_VITE_FIREBASE_STORAGE_BUCKET_KAU_KAT_SINI",
+      messagingSenderId: "PASTE_VITE_FIREBASE_MESSAGING_SENDER_ID_KAU_KAT_SINI",
+      appId: "PASTE_VITE_FIREBASE_APP_ID_KAU_KAT_SINI"
     };
 
-    // Fail AAC_BUTTONS Data[cite: 4]
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // State Pengurusan Tempatan
+    let CURRENT_USER = null;       // Data pengguna login (termasuk profile peranan)
+    let ALL_STUDENTS = [];         // Senarai murid yang ditarik dari Firestore
+    let ACTIVE_STUDENT_ID = null;  // ID murid terpilih
+    let CURRENT_LOGS = [];         // Senarai log murid terpilih
+    let nfcScanning = false;
+    let abortController = null;
+    let myBarChart, myPieChart;
+
     const AAC_BUTTONS = [
       { tag: 'saya_nak_makan',   label: 'Saya nak makan/minum', emoji: '🍽️', border: '#B5D4F4', bg: '#F4F9FF' },
       { tag: 'tolong_saya',      label: 'Tolong saya',          emoji: '🙏', border: '#F4C0D1', bg: '#FDF5F8' },
@@ -294,107 +287,215 @@
       { tag: 'saya_taknak',      label: 'Saya taknak',          emoji: '🚫', border: '#D3D1C7', bg: '#F8F8F6' },
     ];
 
-    let myBarChart, myPieChart, myLineChart;
+    // MONITOR STATUS PENGGUNA (AUTH TRIGGER STATE)
+    auth.onAuthStateChanged(async (user) => {
+      showLoading(true);
+      if (user) {
+        // Ambil data profile peranan (Guru/Ibu bapa) dari Firestore `/users`
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+          CURRENT_USER = { uid: user.uid, email: user.email, ...userDoc.data() };
+          document.getElementById('user-display-name').innerText = `👤 ${CURRENT_USER.name}`;
+          document.getElementById('user-display-role').innerText = CURRENT_USER.role;
+          
+          // Tukar susunan teks berdasarkan Role
+          if(CURRENT_USER.role === 'Ibu Bapa') {
+            document.getElementById('sidebar-list-title').innerText = "Anak Terdaftar";
+            document.getElementById('list-student-header').innerText = "Profil Anak Anda";
+            document.getElementById('form-student-title').innerText = "Daftar Maklumat Anak";
+          } else {
+            document.getElementById('sidebar-list-title').innerText = "Pilih Murid (Semua)";
+            document.getElementById('list-student-header').innerText = "Senarai Semua Murid";
+            document.getElementById('form-student-title').innerText = "Daftar Murid Baru";
+          }
 
-    // Kitaran Mula Aplikasi
+          // Pasang Listener Real-Time untuk Murid ikut peraturan kuiri
+          subscribeStudentsData();
+          
+          document.getElementById('page-login').style.display = 'none';
+          document.getElementById('page-register').style.display = 'none';
+          document.getElementById('app-shell').style.display = 'grid';
+        } else {
+          // Kes ralat jika profile tiada dalam Firestore
+          alert("Profil peranan tidak dijumpai.");
+          auth.signOut();
+        }
+      } else {
+        // Jika logout
+        document.getElementById('app-shell').style.display = 'none';
+        document.getElementById('page-login').style.display = 'flex';
+      }
+      showLoading(false);
+    });
+
+    // RENDER INTERFACES PEMULA
     window.onload = function() {
       renderAACGrid();
-      loadAppData();
-    }
+    };
 
-    // LOAD & SYNC DATA[cite: 2]
-    function loadAppData() {
-      const activeStudent = APP_STATE.students.find(s => s.id === APP_STATE.activeStudentId);
+    // ─── 🔥 LOGIK STRUKTUR KUIRI GURU VS IBU BAPA 🔥 ───
+    function subscribeStudentsData() {
+      let queryRef = db.collection('students');
       
-      // Update Sidebar Select[cite: 6]
-      const select = document.getElementById('sidebar-student-select');
-      select.innerHTML = APP_STATE.students.map(s => `<option value="${s.id}" ${s.id===APP_STATE.activeStudentId?'selected':''}>${s.name.split(' ')[0]}</option>`).join('');
+      // LOGIK UTAMA KAU: 
+      // Jika peranan ialah 'Ibu Bapa', tapis supaya nampak rekod yang dicipta oleh uid dia sahaja.
+      // Jika 'Guru', dia akan tarik terus semua data tanpa tapis `createdBy`.
+      if (CURRENT_USER.role === 'Ibu Bapa') {
+        queryRef = queryRef.where('createdBy', '==', CURRENT_USER.uid);
+      }
 
-      if(activeStudent) {
-        // Update Topbar badge[cite: 6]
-        document.getElementById('topbar-badge-area').innerHTML = `<span class="badge badge-active">● AKTIF: ${activeStudent.name.split(' ')[0]}</span>`;
+      queryRef.onSnapshot((snapshot) => {
+        ALL_STUDENTS = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         
-        // Update Banner Dashboard[cite: 8]
-        document.getElementById('dashboard-student-banner').innerHTML = `
-          <div style="font-size: 11px; font-weight: 600; color: #1D9E75; text-transform: uppercase; margin-bottom: 4px;">Pelajar Aktif</div>
-          <div style="font-size: 20px; font-weight:700; margin-bottom:8px;">${activeStudent.name}</div>
-          <div>
-            <span class="tag tag-teal">${activeStudent.diagnosis}</span>
-            <span class="tag tag-blue">Kognitif: ${activeStudent.cognitiveLevel}</span>
-            <span class="tag tag-amber">Motor: ${activeStudent.motorLevel}</span>
-          </div>`;
+        // Kemaskini Dropdown Pilihan Murid
+        const select = document.getElementById('sidebar-student-select');
+        if(ALL_STUDENTS.length === 0) {
+          select.innerHTML = '<option value="">-- Tiada Rekod --</option>';
+          setActiveStudent(null);
+        } else {
+          select.innerHTML = ALL_STUDENTS.map(s => `<option value="${s.id}">${s.name.split(' ')[0]}</option>`).join('');
+          // Jika tiada murid dipilih lagi, automatik pilih yang pertama
+          if (!ACTIVE_STUDENT_ID || !ALL_STUDENTS.some(s => s.id === ACTIVE_STUDENT_ID)) {
+            setActiveStudent(ALL_STUDENTS[0].id);
+          } else {
+            setActiveStudent(ACTIVE_STUDENT_ID);
+          }
+        }
+        renderStudentCards();
+      }, (error) => {
+        console.error("Ralat penarikan data murid:", error);
+      });
+    }
+
+    // PASANG LISTENER REAL-TIME UNTUK LOG MURID TERPILIH
+    let unsubscribeLogs = null;
+    function setActiveStudent(studentId) {
+      ACTIVE_STUDENT_ID = studentId;
+      const select = document.getElementById('sidebar-student-select');
+      if(select) select.value = studentId;
+
+      if(unsubscribeLogs) unsubscribeLogs(); // Tutup sub lama jika ada
+
+      const activeStudent = ALL_STUDENTS.find(s => s.id === studentId);
+      if (!activeStudent) {
+        document.getElementById('dashboard-student-banner').innerHTML = `<div style="color:#7A9B93;">Sila tambah data profil murid baru.</div>`;
+        document.getElementById('topbar-badge-area').innerHTML = '';
+        document.getElementById('log-table-body').innerHTML = `<tr><td colSpan="3" style="text-align:center; color:#7A9B93;">Tiada rekod</td></tr>`;
+        document.getElementById('dash-today-count').innerText = '0';
+        return;
       }
 
-      // Filter logs murid aktif[cite: 6, 8]
-      const currentLogs = APP_STATE.logs.filter(l => l.studentId === APP_STATE.activeStudentId);
-      
-      // Hitung log hari ini[cite: 8]
-      const todayCount = currentLogs.filter(l => new Date(l.timestamp).toDateString() === new Date().toDateString()).length;
-      document.getElementById('dash-today-count').innerText = todayCount;
+      // Update UI Banner Topbar & Dashboard
+      document.getElementById('topbar-badge-area').innerHTML = `<span class="badge badge-active">● TERPILIH: ${activeStudent.name.split(' ')[0]}</span>`;
+      document.getElementById('dashboard-student-banner').innerHTML = `
+        <div style="font-size: 11px; font-weight: 600; color: #1D9E75; text-transform: uppercase; margin-bottom: 4px;">Profil Aktif</div>
+        <div style="font-size: 18px; font-weight:700; margin-bottom:8px;">${activeStudent.name} (${activeStudent.age} Tahun)</div>
+        <div>
+          <span class="tag tag-teal">${activeStudent.diagnosis}</span>
+          <span class="tag tag-blue">Kognitif: ${activeStudent.cognitiveLevel}</span>
+          <span class="tag tag-amber">Motor: ${activeStudent.motorLevel}</span>
+        </div>`;
 
-      // Update Sejarah Log Jadual[cite: 8]
+      // Langganan data log daripada Firestore (Susunan Terkini Ke Bawah)
+      unsubscribeLogs = db.collection('logs')
+        .where('studentId', '==', studentId)
+        .orderBy('timestamp', 'desc')
+        .limit(50)
+        .onSnapshot((snapshot) => {
+          CURRENT_LOGS = snapshot.docs.map(doc => {
+            const data = doc.data();
+            // Tukar serverTimestamp ke format Date JS biasa
+            return {
+              id: doc.id,
+              ...data,
+              timestamp: data.timestamp ? data.timestamp.toDate() : new Date()
+            };
+          });
+
+          document.getElementById('dash-today-count').innerText = CURRENT_LOGS.length;
+          renderLogTable();
+          renderTopActions();
+          if(document.getElementById('tab-analysis').classList.contains('active')) {
+            updateCharts();
+          }
+        }, (err) => {
+          console.error("Ralat penarikan log data:", err);
+        });
+    }
+
+    // SIMPAN LOG BARU KE FIREBASE (REAL FIRESTORE APP)
+    async function triggerAction(tag, label, method) {
+      if(!ACTIVE_STUDENT_ID) { alert("Sila pilih atau tambah murid terlebih dahulu!"); return; }
+      
+      try {
+        await db.collection('logs').add({
+          studentId: ACTIVE_STUDENT_ID,
+          actionTag: tag,
+          actionLabel: label,
+          triggerMethod: method,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showToast(`✓ Log direkod ke Firebase: ${label}`);
+      } catch (err) {
+        console.error("Gagal simpan log:", err);
+      }
+    }
+
+    // TAMBAH MURID BARU (FIRESTORE DATA CREATION)
+    async function addStudent(e) {
+      e.preventDefault();
+      showLoading(true);
+      const name = document.getElementById('stu-name').value.trim();
+      const diagnosis = document.getElementById('stu-diag').value;
+      const cognitiveLevel = document.getElementById('stu-cog').value;
+      const motorLevel = document.getElementById('stu-mot').value;
+      const age = document.getElementById('stu-age').value;
+
+      try {
+        const newDocRef = await db.collection('students').add({
+          createdBy: CURRENT_USER.uid, // Dikunci pada uid pendaftar
+          name,
+          diagnosis,
+          cognitiveLevel,
+          motorLevel,
+          age: parseInt(age),
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        showToast('✓ Profil berjaya disimpan ke Firebase!');
+        e.target.reset();
+        ACTIVE_STUDENT_ID = newDocRef.id;
+      } catch (err) {
+        alert("Ralat semasa menyimpan: " + err.message);
+      }
+      showLoading(false);
+    }
+
+    // RENDER INTERFACE LOG JADUAL
+    function renderLogTable() {
       const tbody = document.getElementById('log-table-body');
-      if(currentLogs.length === 0) {
-        tbody.innerHTML = `<tr><td colSpan="3" style="text-align:center; color:#7A9B93;">Tiada log</td></tr>`;
-      } else {
-        tbody.innerHTML = currentLogs.slice().reverse().slice(0,20).map(l => {
-          const d = new Date(l.timestamp);
-          const timeStr = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
-          return `<tr>
-            <td style="color:#7A9B93; font-size:12px;">${timeStr} - ${d.getDate()} Jun</td>
-            <td style="font-weight:500;">${l.actionLabel}</td>
-            <td><span class="badge" style="background:${l.triggerMethod==='NFC'?'#E1F5EE':'#F5F5FF'}; color:${l.triggerMethod==='NFC'?'#085041':'#534AB7'};">${l.triggerMethod==='NFC'?'📡':'👆'} ${l.triggerMethod}</span></td>
-          </tr>`;
-        }).join('');
+      if(CURRENT_LOGS.length === 0) {
+        tbody.innerHTML = `<tr><td colSpan="3" style="text-align:center; color:#7A9B93;">Tiada rekod log</td></tr>`;
+        return;
       }
-
-      // Hitung Tiga Teratas[cite: 8]
-      renderTopActions(currentLogs);
-      
-      // Render Halaman Kad Murid[cite: 6]
-      renderStudentCards();
-
-      // Kemaskini Carta jika tab Analisis dibuka
-      updateCharts(currentLogs);
+      tbody.innerHTML = CURRENT_LOGS.slice(0, 20).map(l => {
+        const d = l.timestamp;
+        const timeStr = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')} - ${d.getDate()}/${d.getMonth()+1}`;
+        return `<tr>
+          <td style="color:#7A9B93; font-size:12px;">${timeStr}</td>
+          <td style="font-weight:500;">${l.actionLabel}</td>
+          <td><span class="badge" style="background:${l.triggerMethod==='NFC'?'#E1F5EE':'#F5F5FF'}; color:${l.triggerMethod==='NFC'?'#085041':'#534AB7'};">${l.triggerMethod==='NFC'?'📡':'👆'} ${l.triggerMethod}</span></td>
+        </tr>`;
+      }).join('');
     }
 
-    // RENDER GRID AAC BUTTONS[cite: 4]
-    function renderAACGrid() {
-      const container = document.getElementById('aac-buttons-container');
-      container.innerHTML = AAC_BUTTONS.map(btn => `
-        <button class="aac-btn" style="border-color:${btn.border}; background:${btn.bg};" onclick="triggerAction('${btn.tag}', '${btn.label}', 'Manual Touch')">
-          <span class="aac-emoji">${btn.emoji}</span>
-          <span class="aac-text">${btn.label}</span>
-        </button>
-      `).join('');
-    }
-
-    // SIMPAN LOG (PANGGIL BILA NFC ATAU BUTTON DITEKAN)[cite: 4, 8, 11]
-    function triggerAction(tag, label, method) {
-      if(!APP_STATE.activeStudentId) return;
-      
-      const newLog = {
-        id: 'l_' + Date.now(),
-        studentId: APP_STATE.activeStudentId,
-        actionTag: tag,
-        actionLabel: label,
-        triggerMethod: method,
-        timestamp: new Date()
-      };
-      
-      APP_STATE.logs.push(newLog);
-      showToast(`✓ Log disimpan: ${label}`);
-      loadAppData();
-    }
-
-    // TOP 3 ACTIONS ANALYTICS[cite: 8]
-    function renderTopActions(logs) {
+    // HITUNG TOP USAGE
+    function renderTopActions() {
       const counts = {};
-      logs.forEach(l => { counts[l.actionLabel] = (counts[l.actionLabel] || 0) + 1; });
+      CURRENT_LOGS.forEach(l => { counts[l.actionLabel] = (counts[l.actionLabel] || 0) + 1; });
       const sorted = Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0,3);
-      
       const container = document.getElementById('dash-top-actions');
-      if(sorted.length === 0) { container.innerHTML = "Tiada data"; return; }
+      if(sorted.length === 0) { container.innerHTML = "Tiada log komunikasi dikesan."; return; }
       
       container.innerHTML = sorted.map(([label, count]) => `
         <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #E1F5EE;">
@@ -404,65 +505,143 @@
       `).join('');
     }
 
-    // RENDER STUDENT MANAGEMENT PAGE[cite: 6]
+    // KAD SENARAI MURID (TAB PENGURUSAN)
     function renderStudentCards() {
       const container = document.getElementById('student-cards-container');
-      container.innerHTML = APP_STATE.students.map(s => `
-        <div class="card" style="cursor:pointer; border-color:${s.id===APP_STATE.activeStudentId?'#1D9E75':'#D8EDE7'}" onclick="changeActiveStudent('${s.id}')">
-          <div style="font-weight:700; font-size:15px; margin-bottom:8px;">${s.name}</div>
-          <div style="margin-bottom:6px;"><span class="tag tag-teal">${s.diagnosis}</span><span class="tag tag-amber">Umur: ${s.age}</span></div>
-          <div><span class="tag tag-blue">Kognitif: ${s.cognitiveLevel}</span><span class="tag tag-blue">Motor: ${s.motorLevel}</span></div>
+      if(ALL_STUDENTS.length === 0) {
+        container.innerHTML = `<div style="color:#7A9B93; padding:10px;">Tiada senarai profil dijumpai.</div>`;
+        return;
+      }
+      container.innerHTML = ALL_STUDENTS.map(s => `
+        <div class="card" style="cursor:pointer; border-color:${s.id===ACTIVE_STUDENT_ID?'#1D9E75':'#D8EDE7'}" onclick="changeActiveStudent('${s.id}')">
+          <div style="font-weight:700; font-size:14px; margin-bottom:8px;">${s.name}</div>
+          <div style="margin-bottom:6px;"><span class="tag tag-teal">${s.diagnosis}</span><span class="tag tag-amber">${s.age} Tahun</span></div>
+          <div><span class="tag tag-blue">Kog: ${s.cognitiveLevel}</span><span class="tag tag-blue">Motor: ${s.motorLevel}</span></div>
         </div>
       `).join('');
     }
 
-    function addStudent(e) {
-      e.preventDefault();
-      const sName = document.getElementById('stu-name').value;
-      const sDiag = document.getElementById('stu-diag').value;
-      const sCog  = document.getElementById('stu-cog').value;
-      const sMot  = document.getElementById('stu-mot').value;
-      const sAge  = document.getElementById('stu-age').value;
+    // SISTEM NOTIFIKASI TOAST & LOADING OVERLAY
+    function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display='none', 2500); }
+    function showLoading(show) { document.getElementById('loading-screen').style.display = show ? 'flex' : 'none'; }
+    function changeActiveStudent(id) { if(id) setActiveStudent(id); }
 
-      const newStu = { id: 's_' + Date.now(), name: sName, diagnosis: sDiag, cognitiveLevel: sCog, motorLevel: sMot, age: sAge };
-      APP_STATE.students.push(newStu);
-      APP_STATE.activeStudentId = newStu.id;
-      showToast('Pelajar berhasil ditambah!');
-      e.target.reset();
-      loadAppData();
+    // RENDER INTERFACE GRID AAC BUTTONS
+    function renderAACGrid() {
+      document.getElementById('aac-buttons-container').innerHTML = AAC_BUTTONS.map(btn => `
+        <button class="aac-btn" style="border-color:${btn.border}; background:${btn.bg};" onclick="triggerAction('${btn.tag}', '${btn.label}', 'Manual Touch')">
+          <span class="aac-emoji">${btn.emoji}</span>
+          <span class="aac-text">${btn.label}</span>
+        </button>
+      `).join('');
     }
 
-    // REAL WEB NFC FUNCTIONALITY (Salinan Logik dari useNFC.js)
-    let abortController = null;
+    // CARTA REAL-TIME CHART.JS
+    function updateCharts() {
+      const hoursData = Array(24).fill(0);
+      const counts = {};
+      CURRENT_LOGS.forEach(l => { 
+        hoursData[l.timestamp.getHours()]++;
+        counts[l.actionLabel] = (counts[l.actionLabel] || 0) + 1;
+      });
+      const activeHours = hoursData.slice(7, 20);
+      const hourLabels = Array.from({length: 13}, (_, i) => `${i+7}:00`);
+
+      if(myBarChart) myBarChart.destroy();
+      myBarChart = new Chart(document.getElementById('chartBar'), {
+        type: 'bar',
+        data: { labels: hourLabels, datasets: [{ label: 'Kekerapan', data: activeHours, backgroundColor: '#1D9E75', borderRadius: 4 }] },
+        options: { responsive: true }
+      });
+
+      if(myPieChart) myPieChart.destroy();
+      myPieChart = new Chart(document.getElementById('chartPie'), {
+        type: 'pie',
+        data: { labels: Object.keys(counts), datasets: [{ data: Object.values(counts), backgroundColor: ['#1D9E75','#185FA5','#BA7517','#D85A30','#534AB7'] }] },
+        options: { responsive: true }
+      });
+    }
+
+    // SISTEM PENGENDALIAN AUTH (SIGN UP & LOG IN)
+    async function handleRegister(e) {
+      e.preventDefault();
+      showLoading(true);
+      const name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-pass').value;
+      const role = document.getElementById('reg-role').value;
+
+      try {
+        const cred = await auth.createUserWithEmailAndPassword(email, password);
+        // Simpan peranan ke Firestore `/users`
+        await db.collection('users').doc(cred.user.uid).set({
+          name,
+          email,
+          role,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showToast('Akaun berjaya didaftarkan!');
+      } catch (err) {
+        alert("Pendaftaran gagal: " + err.message);
+      }
+      showLoading(false);
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      showLoading(true);
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-pass').value;
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        showToast('Selamat Datang!');
+      } catch (err) {
+        alert("Log masuk gagal: " + err.message);
+      }
+      showLoading(false);
+    }
+
+    function handleLogout() {
+      if(confirm("Log keluar dari sistem?")) {
+        auth.signOut();
+      }
+    }
+
+    function switchAuth(type) {
+      document.getElementById('page-login').style.display = type === 'login' ? 'flex' : 'none';
+      document.getElementById('page-register').style.display = type === 'register' ? 'flex' : 'none';
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+      document.getElementById(`nav-${tabId}`).classList.add('active');
+      document.getElementById('topbar-page-title').innerText = tabId.charAt(0).toUpperCase() + tabId.slice(1);
+      if(tabId === 'analysis') updateCharts();
+    }
+
+    // WEBNFC INTEGRATION (useNFC.js FUNCTIONAL)
     async function toggleNFCScan() {
+      if (!('NDEFReader' in window)) { alert("NFC tidak disokong pada peranti/browser ini. Sila guna Chrome Android."); return; }
       const statusText = document.getElementById('nfc-status-text');
-      const subText = document.getElementById('nfc-sub-text');
       const btn = document.getElementById('nfc-btn');
       const panel = document.getElementById('nfc-panel-box');
 
-      if (!('NDEFReader' in window)) {
-        alert("NFC Tidak disokong pada pelayar ini. Sila gunakan Android Google Chrome.");
-        return;
-      }
-
-      if (APP_STATE.nfcScanning) {
-        // Stop scanning
+      if (nfcScanning) {
         if(abortController) abortController.abort();
-        APP_STATE.nfcScanning = false;
+        nfcScanning = false;
         panel.classList.remove('scanning');
         statusText.innerText = "Sedia untuk Mengimbas";
         btn.innerText = "📡 Mula Imbas";
       } else {
-        // Start scanning
         try {
           abortController = new AbortController();
           const ndef = new NDEFReader();
           await ndef.scan({ signal: abortController.signal });
-          
-          APP_STATE.nfcScanning = true;
+          nfcScanning = true;
           panel.classList.add('scanning');
-          statusText.innerText = "Sedang Mengimbas...";
-          subText.innerText = "Dekatkan tag NFC Pillow ke belakang phone abang.";
+          statusText.innerText = "Sedang Mengimbas... Sila dekatkan tag.";
           btn.innerText = "⏹ Henti Imbas";
 
           ndef.onreading = ({ message }) => {
@@ -470,94 +649,46 @@
               if (record.recordType === 'text') {
                 const decoder = new TextDecoder(record.encoding || 'utf-8');
                 const tagRaw = decoder.decode(record.data).trim().toLowerCase().replace(/\s+/g, '_');
-                
-                // Padankan dengan butang AAC[cite: 4]
                 const matchBtn = AAC_BUTTONS.find(b => b.tag === tagRaw);
-                if(matchBtn) {
-                  triggerAction(matchBtn.tag, matchBtn.label, 'NFC');
-                }
+                if(matchBtn) triggerAction(matchBtn.tag, matchBtn.label, 'NFC');
               }
             }
           };
-        } catch (error) {
-          alert("Gagal mulakan NFC: " + error.message);
+        } catch (err) {
+          alert("Ralat NFC: " + err.message);
         }
       }
     }
 
-    // CHART.JS REAL-TIME RENDERER (Menggantikan Recharts)[cite: 5]
-    function updateCharts(logs) {
-      // 1. Pemprosesan Data Jam[cite: 5]
-      const hoursData = Array(24).fill(0);
-      logs.forEach(l => { hoursData[new Date(l.timestamp).getHours()]++ });
-      const activeHours = hoursData.slice(6, 21); // Jam 6 pagi ke 8 malam[cite: 5]
-      const hourLabels = Array.from({length: 15}, (_, i) => `${i+6}:00`);
-
-      if(myBarChart) myBarChart.destroy();
-      myBarChart = new Chart(document.getElementById('chartBar'), {
-        type: 'bar',
-        data: { labels: hourLabels, datasets: [{ label: 'Komunikasi', data: activeHours, backgroundColor: '#1D9E75', borderRadius: 4 }] },
-        options: { responsive: true, plugins: { legend: { display: false } } }
-      });
-
-      // 2. Pemprosesan Data Pai[cite: 5]
-      const counts = {};
-      logs.forEach(l => { counts[l.actionLabel] = (counts[l.actionLabel] || 0) + 1 });
-      
-      if(myPieChart) myPieChart.destroy();
-      myPieChart = new Chart(document.getElementById('chartPie'), {
-        type: 'pie',
-        data: {
-          labels: Object.keys(counts),
-          datasets: [{ data: Object.values(counts), backgroundColor: ['#1D9E75','#185FA5','#BA7517','#D85A30','#534AB7','#D4537E'] }]
-        },
-        options: { responsive: true }
-      });
-
-      // 3. Trend 7 Hari Line Chart[cite: 5]
-      const lineLabels = ['Isnin', 'Selasa', 'Rabu', 'Khamis', 'Jumaat', 'Sabtu', 'Ahad'];
-      const dummyLineData = [5, 12, logs.length, 8, 15, 3, 9]; // Diganti mengikut hari realistik[cite: 5]
-
-      if(myLineChart) myLineChart.destroy();
-      myLineChart = new Chart(document.getElementById('chartLine'), {
-        type: 'line',
-        data: { labels: lineLabels, datasets: [{ label: 'Jumlah Interaksi', data: dummyLineData, borderColor: '#1D9E75', tension: 0.3, fill:false }] },
-        options: { responsive: true }
-      });
-    }
-
-    // UTILITIES (Navigation, Toast, CSV)[cite: 6, 8]
-    function switchTab(tabId) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      
-      document.getElementById(`tab-${tabId}`).classList.add('active');
-      document.getElementById(`nav-${tabId}`).classList.add('active');
-      document.getElementById('topbar-page-title').innerText = tabId.charAt(0).toUpperCase() + tabId.slice(1);
-      loadAppData();
-    }
-
-    function changeActiveStudent(id) { APP_STATE.activeStudentId = id; loadAppData(); }
-    function switchAuth(type) {
-      document.getElementById('page-login').style.display = type==='login'?'flex':'none';
-      document.getElementById('page-register').style.display = type==='register'?'flex':'none';
-    }
-    function handleLogin(e) { e.preventDefault(); document.getElementById('page-login').style.display='none'; document.getElementById('app-shell').style.display='grid'; loadAppData(); }
-    function handleLogout() { document.getElementById('app-shell').style.display='none'; document.getElementById('page-login').style.display='flex'; }
-    function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display='none', 2500); }
-    
+    // EXPORT CSV UTILITY
     function downloadCSV() {
-      const currentLogs = APP_STATE.logs.filter(l => l.studentId === APP_STATE.activeStudentId);
+      if(CURRENT_LOGS.length === 0) { alert("Tiada data untuk dieksport."); return; }
       let csv = 'Masa,Tindakan,Kaedah\n';
-      currentLogs.forEach(l => { csv += `"${l.timestamp.toISOString()}","${l.actionLabel}","${l.triggerMethod}"\n`; });
+      CURRENT_LOGS.forEach(l => { csv += `"${l.timestamp.toISOString()}","${l.actionLabel}","${l.triggerMethod}"\n`; });
       const blob = new Blob([csv], { type: 'text/csv' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = `log_scp_${APP_STATE.activeStudentId}.csv`;
+      a.download = `log_scp_${ACTIVE_STUDENT_ID}.csv`;
       a.click();
     }
 
-    function clearLogs() { if(confirm('Padam semua log pelajar ini?')) { APP_STATE.logs = APP_STATE.logs.filter(l => l.studentId !== APP_STATE.activeStudentId); loadAppData(); } }
+    // CLEAR CODES FROM FIRESTORE
+    async function clearLogs() {
+      if(!ACTIVE_STUDENT_ID) return;
+      if(confirm('Padam semua sejarah log komunikasi murid ini dari Firebase? Tindakan ini tidak boleh diundur.')) {
+        showLoading(true);
+        try {
+          const snapshot = await db.collection('logs').where('studentId', '==', ACTIVE_STUDENT_ID).get();
+          const batch = db.batch();
+          snapshot.docs.forEach(doc => batch.delete(doc.ref));
+          await batch.commit();
+          showToast('Log berjaya dibersihkan!');
+        } catch (err) {
+          alert("Gagal memadam log: " + err.message);
+        }
+        showLoading(false);
+      }
+    }
   </script>
 </body>
 </html>
