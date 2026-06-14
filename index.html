@@ -276,16 +276,27 @@
     let abortController = null;
     let myBarChart, myPieChart;
 
-    const AAC_BUTTONS = [
-      { tag: 'saya_nak_makan',   label: 'Saya nak makan/minum', emoji: '🍽️', border: '#B5D4F4', bg: '#F4F9FF' },
-      { tag: 'tolong_saya',      label: 'Tolong saya',          emoji: '🙏', border: '#F4C0D1', bg: '#FDF5F8' },
-      { tag: 'sakit_tak_selesa', label: 'Saya sakit/tak selesa',emoji: '😣', border: '#FAC775', bg: '#FFFAF0' },
-      { tag: 'ke_tandas',        label: 'Saya nak ke tandas',   emoji: '🚽', border: '#9FE1CB', bg: '#F2FCF8' },
-      { tag: 'ya',               label: 'Ya',                   emoji: '✅', border: '#C0DD97', bg: '#F5FAF0' },
-      { tag: 'tidak',            label: 'Tidak',                emoji: '❌', border: '#F5C4B3', bg: '#FFF3EF' },
-      { tag: 'saya_nak',         label: 'Saya nak',             emoji: '👐', border: '#CED0F8', bg: '#F5F5FF' },
-      { tag: 'saya_taknak',      label: 'Saya taknak',          emoji: '🚫', border: '#D3D1C7', bg: '#F8F8F6' },
-    ];
+    const COMM_BUTTONS = [
+  { id:'makan_minum', label:'Saya nak makan / minum', icon:'🍽️', desc:'Lapar atau dahaga',  priority:false },
+  { id:'saya_nak',    label:'Saya nak',                icon:'🙋', desc:'Keinginan umum',    priority:false },
+  { id:'saya_taknak', label:'Saya taknak',             icon:'🙅', desc:'Menolak',           priority:false },
+  { id:'tolong',      label:'Tolong saya',             icon:'🆘', desc:'Perlu bantuan',     priority:true  },
+  { id:'ya',          label:'Ya',                      icon:'✅', desc:'Bersetuju',         priority:false },
+  { id:'tidak',       label:'Tidak',                   icon:'❌', desc:'Tidak bersetuju',   priority:false },
+  { id:'tandas',      label:'Saya nak ke tandas',      icon:'🚽', desc:'Keperluan tandas',  priority:false },
+  { id:'sakit',       label:'Saya sakit / tak selesa', icon:'🤒', desc:'Tidak sihat',       priority:true  },
+];
+const TTS = {
+  makan_minum:'Saya nak makan atau minum.',
+  saya_nak:   'Saya nak sesuatu.',
+  saya_taknak:'Saya taknak.',
+  tolong:     'Tolong saya! Saya perlukan bantuan.',
+  ya:         'Ya.',
+  tidak:      'Tidak.',
+  tandas:     'Saya nak ke tandas.',
+  sakit:      'Saya sakit atau tidak selesa.',
+};
+
 
     // MONITOR STATUS PENGGUNA (AUTH TRIGGER STATE)
     auth.onAuthStateChanged(async (user) => {
@@ -621,7 +632,7 @@
       if(tabId === 'analysis') updateCharts();
     }
 
-    // WEBNFC INTEGRATION (useNFC.js FUNCTIONAL)
+// WEBNFC INTEGRATION (Fungsi diperbaiki untuk COMM_BUTTONS)
     async function toggleNFCScan() {
       if (!('NDEFReader' in window)) { alert("NFC tidak disokong pada peranti/browser ini. Sila guna Chrome Android."); return; }
       const statusText = document.getElementById('nfc-status-text');
@@ -644,31 +655,40 @@
           statusText.innerText = "Sedang Mengimbas... Sila dekatkan tag.";
           btn.innerText = "⏹ Henti Imbas";
 
-         ndef.onreading = ({ message }) => {
+          ndef.onreading = ({ message }) => {
                 for (const record of message.records) {
                     if (record.recordType === 'text') {
                         const decoder = new TextDecoder(record.encoding || 'utf-8');
                         const nfcText = decoder.decode(record.data).toLowerCase().trim();
                         
-                        console.log("Tag NFC dikesan:", nfcText); // Boleh tengok dekat console fon/laptop
+                        console.log("Tag NFC dikesan:", nfcText); // Boleh dilihat melalui Log Console
 
-                        // Logik padanan pintar (Boleh terima format jarak mahupun underscore)
-                        const matchBtn = AAC_BUTTONS.find(b => {
-                            const cleanTag = b.tag.replace(/_/g, ' '); 
-                            return nfcText === b.tag || nfcText === cleanTag || nfcText.includes(cleanTag) || nfcText.includes(b.tag);
+                        // LOGIK PADANAN PINTAR (Diperbaiki menggunakan COMM_BUTTONS dan .id)
+                        const matchBtn = COMM_BUTTONS.find(b => {
+                            const cleanId = b.id.replace(/_/g, ' '); // tukar 'makan_minum' jadi 'makan minum'
+                            return nfcText === b.id || nfcText === cleanId || nfcText.includes(cleanId) || nfcText.includes(b.id);
                         });
 
                         if (matchBtn) {
-                            triggerAction(matchBtn.tag, matchBtn.label, 'NFC');
+                            triggerAction(matchBtn.id, matchBtn.label, 'NFC');
                         } else {
-                            // Kalau masih tak keluar apa-apa, sekurang-kurangnya ada amaran teks apa yang dibaca
-                            alert("⚠️ Tag dikesan tetapi tiada padanan! Nilai tag: '" + nfcText + "'");
+                            // Jika teks dibaca dari tag tiada dalam senarai ID COMM_BUTTONS
+                            alert("⚠️ Tag dikesan tetapi tiada padanan! Nilai tag dalam cip: '" + nfcText + "'");
                         }
                     }
                 }
             };
+            
+            ndef.onreadingerror = () => {
+                console.error("Gagal membaca data tag NFC.");
+            };
+
         } catch (err) {
           alert("Ralat NFC: " + err.message);
+          nfcScanning = false;
+          panel.classList.remove('scanning');
+          statusText.innerText = "Sedia untuk Mengimbas";
+          btn.innerText = "📡 Mula Imbas";
         }
       }
     }
