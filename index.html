@@ -644,16 +644,29 @@
           statusText.innerText = "Sedang Mengimbas... Sila dekatkan tag.";
           btn.innerText = "⏹ Henti Imbas";
 
-          ndef.onreading = ({ message }) => {
-            for (const record of message.records) {
-              if (record.recordType === 'text') {
-                const decoder = new TextDecoder(record.encoding || 'utf-8');
-                const tagRaw = decoder.decode(record.data).trim().toLowerCase().replace(/\s+/g, '_');
-                const matchBtn = AAC_BUTTONS.find(b => b.tag === tagRaw);
-                if(matchBtn) triggerAction(matchBtn.tag, matchBtn.label, 'NFC');
-              }
-            }
-          };
+         ndef.onreading = ({ message }) => {
+                for (const record of message.records) {
+                    if (record.recordType === 'text') {
+                        const decoder = new TextDecoder(record.encoding || 'utf-8');
+                        const nfcText = decoder.decode(record.data).toLowerCase().trim();
+                        
+                        console.log("Tag NFC dikesan:", nfcText); // Boleh tengok dekat console fon/laptop
+
+                        // Logik padanan pintar (Boleh terima format jarak mahupun underscore)
+                        const matchBtn = AAC_BUTTONS.find(b => {
+                            const cleanTag = b.tag.replace(/_/g, ' '); 
+                            return nfcText === b.tag || nfcText === cleanTag || nfcText.includes(cleanTag) || nfcText.includes(b.tag);
+                        });
+
+                        if (matchBtn) {
+                            triggerAction(matchBtn.tag, matchBtn.label, 'NFC');
+                        } else {
+                            // Kalau masih tak keluar apa-apa, sekurang-kurangnya ada amaran teks apa yang dibaca
+                            alert("⚠️ Tag dikesan tetapi tiada padanan! Nilai tag: '" + nfcText + "'");
+                        }
+                    }
+                }
+            };
         } catch (err) {
           alert("Ralat NFC: " + err.message);
         }
