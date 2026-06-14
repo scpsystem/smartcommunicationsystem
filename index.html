@@ -340,10 +340,22 @@ const TTS = {
     });
 
     // RENDER INTERFACES PEMULA
-    window.onload = function() {
-      renderAACGrid();
-    };
+window.onload = function() {
+  renderAACGrid();
 
+  // Logik khas untuk iPhone / Scan URL luar
+  const urlParams = new URLSearchParams(window.location.search);
+  const autoTag = urlParams.get('tag');
+  if (autoTag) {
+    const matchBtn = COMM_BUTTONS.find(b => b.id === autoTag);
+    if (matchBtn) {
+      // Tunggu Firebase bersedia sekejap kemudian rekod data
+      setTimeout(() => {
+        triggerAction(matchBtn.id, matchBtn.label, 'NFC_URL');
+      }, 2000);
+    }
+  }
+};
     // ─── 🔥 LOGIK STRUKTUR KUIRI GURU VS IBU BAPA 🔥 ───
     function subscribeStudentsData() {
       let queryRef = db.collection('students');
