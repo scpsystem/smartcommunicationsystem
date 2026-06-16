@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🌼 - SCP System - Smart Communication Pillow</title>
+  <title>SCP System - Smart Communication Pillow</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -72,6 +72,11 @@
     
     #toast { position: fixed; bottom: 20px; right: 20px; background: #1D9E75; color: white; padding: 12px 24px; border-radius: 6px; display: none; z-index: 999; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     .loading-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); display:none; justify-content:center; align-items:center; z-index:9999; font-weight:bold; color:#085041; }
+    
+    /* Tambahan Style untuk Tetapan Khas */
+    .code-tag { background: #F4F9FF; padding: 4px 8px; border-radius: 4px; color: #1D9E75; font-weight: 700; font-family: monospace; font-size: 12px; }
+    .btn-copy { background: #E1F5EE; color: #085041; border: 1px solid #9FE1CB; padding: 2px 6px; border-radius: 4px; font-size: 10px; cursor: pointer; font-weight: 600; margin-left: 6px; }
+    .btn-copy:hover { background: #1D9E75; color: white; }
   </style>
 </head>
 <body>
@@ -127,7 +132,8 @@
         <div class="nav-section">Utama</div>
         <button class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">▤ Dashboard</button>
         <button class="nav-item" id="nav-analysis" onclick="switchTab('analysis')">📊 Analisis Data</button>
-        <div class="nav-item" id="nav-nfc-settings" onclick="switchTab('nfc-settings')">⚙️ Tetapan NFC</div>
+        <button class="nav-item" id="nav-nfc-settings" onclick="switchTab('nfc-settings')">⚙️ Tetapan NFC</button>
+        
         <div class="nav-section">Urusan Profil</div>
         <button class="nav-item" id="nav-students" onclick="switchTab('students')">👥 Kemasukan Murid</button>
         
@@ -210,77 +216,32 @@
             <div class="card"><div class="card-title">📊 Kekerapan Mengikut Jam</div><canvas id="chartBar" height="180"></canvas></div>
             <div class="card"><div class="card-title">🥧 Pembahagian Jenis Komunikasi</div><canvas id="chartPie" height="180"></canvas></div>
           </div>
-          <div class="page" id="tab-nfc-settings">
-  <div class="card" style="margin-bottom: 20px;">
-    <div class="card-title">⚙️ Panduan Konfigurasi & Tetapan Tag NFC (SCP)</div>
-    <p style="color: #7A9B93; margin-bottom: 15px; font-size: 13px;">
-      Sila gunakan aplikasi <strong>NFC Tools</strong> pada telefon pintar untuk menulis data ke dalam cip bantal pintar. Pilih jenis rekod <strong>Teks (Text)</strong> dan taip nilai penanda (Tagging) tepat seperti dalam jadual di bawah:
-    </p>
-    
-    <div style="overflow-x: auto;">
-      <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-        <thead>
-          <tr style="background-color: #E1F5EE; color: #085041; text-align: left;">
-            <th style="padding: 12px; border-bottom: 2px solid #D8EDE7;">Bil</th>
-            <th style="padding: 12px; border-bottom: 2px solid #D8EDE7;">Fungsi Butang Komunikasi (AAC)</th>
-            <th style="padding: 12px; border-bottom: 2px solid #D8EDE7;">Nilai Penanda Wajib (Tagging)</th>
-            <th style="padding: 12px; border-bottom: 2px solid #D8EDE7;">Format Rekod NFC Tools</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="border-bottom: 1px solid #E1F5EE;">
-            <td style="padding: 12px; font-weight: 600;">1</td>
-            <td style="padding: 12px;">🍽️ Saya nak makan / minum</td>
-            <td style="padding: 12px;"><code style="background: #F4F9FF; padding: 4px 8px; border-radius: 4px; color: #1D9E75; font-weight: 700;">saya_nak_makan</code></td>
-            <td style="padding: 12px; color: #7A9B93; font-size: 12px;">Teks (Text)</td>
-          </tr>
-          <tr style="border-bottom: 1px solid #E1F5EE;">
-            <td style="padding: 12px; font-weight: 600;">2</td>
-            <td style="padding: 12px;">🙏 Tolong saya</td>
-            <td style="padding: 12px;"><code style="background: #F4F9FF; padding: 4px 8px; border-radius: 4px; color: #1D9E75; font-weight: 700;">tolong_saya</code></td>
-            <td style="padding: 12px; color: #7A9B93; font-size: 12px;">Teks (Text)</td>
-          </tr>
-          <tr style="border-bottom: 1px solid #E1F5EE;">
-            <td style="padding: 12px; font-weight: 600;">3</td>
-            <td style="padding: 12px;">🤒 Saya sakit / tak selesa</td>
-            <td style="padding: 12px;"><code style="background: #F4F9FF; padding: 4px 8px; border-radius: 4px; color: #1D9E75; font-weight: 700;">sakit_tak_selesa</code></td>
-            <td style="padding: 12px; color: #7A9B93; font-size: 12px;">Teks (Text)</td>
-          </tr>
-          <tr style="border-bottom: 1px solid #E1F5EE;">
-            <td style="padding: 12px; font-weight: 600;">4</td>
-            <td style="padding: 12px;">🚽 Saya nak ke tandas</td>
-            <td style="padding: 12px;"><code style="background: #F4F9FF; padding: 4px 8px; border-radius: 4px; color: #1D9E75; font-weight: 700;">ke_tandas</code></td>
-            <td style="padding: 12px; color: #7A9B93; font-size: 12px;">Teks (Text)</td>
-          </tr>
-          <tr style="border-bottom: 1px solid #E1F5EE;">
-            <td style="padding: 12px; font-weight: 600;">5</td>
-            <td style="padding: 12px;">✅ Ya</td>
-            <td style="padding: 12px;"><code style="background: #F4F9FF; padding: 4px 8px; border-radius: 4px; color: #1D9E75; font-weight: 700;">ya</code></td>
-            <td style="padding: 12px; color: #7A9B93; font-size: 12px;">Teks (Text)</td>
-          </tr>
-          <tr style="border-bottom: 1px solid #E1F5EE;">
-            <td style="border-bottom: 1px solid #E1F5EE; padding: 12px; font-weight: 600;">6</td>
-            <td style="padding: 12px;">❌ Tidak</td>
-            <td style="padding: 12px;"><code style="background: #F4F9FF; padding: 4px 8px; border-radius: 4px; color: #1D9E75; font-weight: 700;">tidak</code></td>
-            <td style="padding: 12px; color: #7A9B93; font-size: 12px;">Teks (Text)</td>
-          </tr>
-          <tr style="border-bottom: 1px solid #E1F5EE;">
-            <td style="padding: 12px; font-weight: 600;">7</td>
-            <td style="padding: 12px;">🤝 Saya nak</td>
-            <td style="padding: 12px;"><code style="background: #F4F9FF; padding: 4px 8px; border-radius: 4px; color: #1D9E75; font-weight: 700;">saya_nak</code></td>
-            <td style="padding: 12px; color: #7A9B93; font-size: 12px;">Teks (Text)</td>
-          </tr>
-          <tr style="border-bottom: 1px solid #E1F5EE;">
-            <td style="padding: 12px; font-weight: 600;">8</td>
-            <td style="padding: 12px;">🚫 Saya taknak</td>
-            <td style="padding: 12px;"><code style="background: #F4F9FF; padding: 4px 8px; border-radius: 4px; color: #1D9E75; font-weight: 700;">saya_taknak</code></td>
-            <td style="padding: 12px; color: #7A9B93; font-size: 12px;">Teks (Text)</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
+        </div>
+
+        <!-- TAB BARU: TETAPAN CONFIGURATION NFC -->
+        <div id="tab-nfc-settings" class="page">
+          <div class="card" style="margin-bottom: 20px;">
+            <div class="card-title">⚙️ Panduan Konfigurasi & Tetapan Tag NFC (SCP)</div>
+            <p style="color: #7A9B93; margin-bottom: 15px; font-size: 13px; line-height: 1.5;">
+              Sila gunakan aplikasi <strong>NFC Tools</strong> pada telefon pintar untuk menulis data ke dalam cip bantal pintar. Pilih jenis rekod mengikut kesesuaian peranti anda:
+            </p>
+            
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                <thead>
+                  <tr style="background-color: #E1F5EE; color: #085041; text-align: left;">
+                    <th style="padding: 12px; border-bottom: 2px solid #D8EDE7;">Bil</th>
+                    <th style="padding: 12px; border-bottom: 2px solid #D8EDE7;">Fungsi Butang Komunikasi (AAC)</th>
+                    <th style="padding: 12px; border-bottom: 2px solid #D8EDE7;">Nilai Penanda Wajib (Tagging)</th>
+                    <th style="padding: 12px; border-bottom: 2px solid #D8EDE7;">Tindakan Pantas</th>
+                  </tr>
+                </thead>
+                <tbody id="nfc-guide-table-body">
+                  <!-- Dijana secara dinamik oleh JavaScript supaya selaras dengan AAC_BUTTONS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
         <div id="tab-students" class="page">
@@ -323,14 +284,13 @@
 
   <script>
     // ─── 🛠️ KONFIGURASI FIREBASE KAU ───
-    // Masukkan data asal dari fail firebase.js kau kat sini
     const firebaseConfig = {
-      apiKey: "AIzaSyCJRpDsRqUlXhy-5GYhbeBjtGIxLOoO390",
-      authDomain: "scpsystem-c2dec.firebaseapp.com",
-      projectId: "scpsystem-c2dec",
-      storageBucket: "scpsystem-c2dec.firebasestorage.app",
-      messagingSenderId: "520296926135",
-      appId: "1:520296926135:web:a5e63b8a0fc0aedf1bf632"
+      apiKey: "PASTE_VITE_FIREBASE_API_KEY_KAU_KAT_SINI",
+      authDomain: "PASTE_VITE_FIREBASE_AUTH_DOMAIN_KAU_KAT_SINI",
+      projectId: "PASTE_VITE_FIREBASE_PROJECT_ID_KAU_KAT_SINI",
+      storageBucket: "PASTE_VITE_FIREBASE_STORAGE_BUCKET_KAU_KAT_SINI",
+      messagingSenderId: "PASTE_VITE_FIREBASE_MESSAGING_SENDER_ID_KAU_KAT_SINI",
+      appId: "PASTE_VITE_FIREBASE_APP_ID_KAU_KAT_SINI"
     };
 
     // Initialize Firebase
@@ -339,48 +299,35 @@
     const db = firebase.firestore();
 
     // State Pengurusan Tempatan
-    let CURRENT_USER = null;       // Data pengguna login (termasuk profile peranan)
-    let ALL_STUDENTS = [];         // Senarai murid yang ditarik dari Firestore
-    let ACTIVE_STUDENT_ID = null;  // ID murid terpilih
-    let CURRENT_LOGS = [];         // Senarai log murid terpilih
+    let CURRENT_USER = null;       
+    let ALL_STUDENTS = [];         
+    let ACTIVE_STUDENT_ID = null;  
+    let CURRENT_LOGS = [];         
     let nfcScanning = false;
     let abortController = null;
     let myBarChart, myPieChart;
 
-    const COMM_BUTTONS = [
-  { tag:'makan_minum', label:'Saya nak makan / minum', icon:'🍽️', desc:'Lapar atau dahaga',  priority:false },
-  { tag:'saya_nak',    label:'Saya nak',                icon:'🙋', desc:'Keinginan umum',    priority:false },
-  { tag:'saya_taknak', label:'Saya taknak',             icon:'🙅', desc:'Menolak',           priority:false },
-  { tag:'tolong',      label:'Tolong saya',             icon:'🆘', desc:'Perlu bantuan',     priority:true  },
-  { tag:'ya',          label:'Ya',                      icon:'✅', desc:'Bersetuju',         priority:false },
-  { tag:'tidak',       label:'Tidak',                   icon:'❌', desc:'Tidak bersetuju',   priority:false },
-  { tag:'tandas',      label:'Saya nak ke tandas',      icon:'🚽', desc:'Keperluan tandas',  priority:false },
-  { tag:'sakit',       label:'Saya sakit / tak selesa', icon:'🤒', desc:'Tidak sihat',       priority:true  },
-];
-const TTS = {
-  makan_minum:'Saya nak makan atau minum.',
-  saya_nak:   'Saya nak sesuatu.',
-  saya_taknak:'Saya taknak.',
-  tolong:     'Tolong saya! Saya perlukan bantuan.',
-  ya:         'Ya.',
-  tidak:      'Tidak.',
-  tandas:     'Saya nak ke tandas.',
-  sakit:      'Saya sakit atau tidak selesa.',
-};
-
+    const AAC_BUTTONS = [
+      { tag: 'saya_nak_makan',   label: 'Saya nak makan/minum', emoji: '🍽️', border: '#B5D4F4', bg: '#F4F9FF' },
+      { tag: 'tolong_saya',      label: 'Tolong saya',          emoji: '🙏', border: '#F4C0D1', bg: '#FDF5F8' },
+      { tag: 'sakit_tak_selesa', label: 'Saya sakit/tak selesa',emoji: '痕', border: '#FAC775', bg: '#FFFAF0' }, // Emoji asal dikekalkan mengikut rujukan indx.txt
+      { tag: 'ke_tandas',        label: 'Saya nak ke tandas',   emoji: '🚽', border: '#9FE1CB', bg: '#F2FCF8' },
+      { tag: 'ya',               label: 'Ya',                   emoji: '✅', border: '#C0DD97', bg: '#F5FAF0' },
+      { tag: 'tidak',            label: 'Tidak',                emoji: '❌', border: '#F5C4B3', bg: '#FFF3EF' },
+      { tag: 'saya_nak',         label: 'Saya nak',             emoji: '👐', border: '#CED0F8', bg: '#F5F5FF' },
+      { tag: 'saya_taknak',      label: 'Saya taknak',          emoji: '🚫', border: '#D3D1C7', bg: '#F8F8F6' },
+    ];
 
     // MONITOR STATUS PENGGUNA (AUTH TRIGGER STATE)
     auth.onAuthStateChanged(async (user) => {
       showLoading(true);
       if (user) {
-        // Ambil data profile peranan (Guru/Ibu bapa) dari Firestore `/users`
         const userDoc = await db.collection('users').doc(user.uid).get();
         if (userDoc.exists) {
           CURRENT_USER = { uid: user.uid, email: user.email, ...userDoc.data() };
           document.getElementById('user-display-name').innerText = `👤 ${CURRENT_USER.name}`;
           document.getElementById('user-display-role').innerText = CURRENT_USER.role;
           
-          // Tukar susunan teks berdasarkan Role
           if(CURRENT_USER.role === 'Ibu Bapa') {
             document.getElementById('sidebar-list-title').innerText = "Anak Terdaftar";
             document.getElementById('list-student-header').innerText = "Profil Anak Anda";
@@ -391,19 +338,16 @@ const TTS = {
             document.getElementById('form-student-title').innerText = "Daftar Murid Baru";
           }
 
-          // Pasang Listener Real-Time untuk Murid ikut peraturan kuiri
           subscribeStudentsData();
           
           document.getElementById('page-login').style.display = 'none';
           document.getElementById('page-register').style.display = 'none';
           document.getElementById('app-shell').style.display = 'grid';
         } else {
-          // Kes ralat jika profile tiada dalam Firestore
           alert("Profil peranan tidak dijumpai.");
           auth.signOut();
         }
       } else {
-        // Jika logout
         document.getElementById('app-shell').style.display = 'none';
         document.getElementById('page-login').style.display = 'flex';
       }
@@ -411,31 +355,23 @@ const TTS = {
     });
 
     // RENDER INTERFACES PEMULA
-window.onload = function() {
-      // Panggil fungsi render asal kau
+    window.onload = function() {
       renderAACGrid();
-      if (typeof updateCharts === 'function') updateCharts();
+      renderNFCGuideTable(); // Bina jadual tetapan panduan interaktif
 
       // LOGIK KHAS SOKONGAN IPHONE (Membaca parameter URL bila tag di-tap luar talian)
       const urlParams = new URLSearchParams(window.location.search);
       const autoTag = urlParams.get('tag');
       
       if (autoTag) {
-        // Tunggu sistem Firebase auth stabil dalam 2.5 saat, kemudian hantar data automatik
         setTimeout(() => {
-          if (typeof processNFCTag === 'function') {
-            processNFCTag(autoTag, 'NFC_URL_IPHONE');
-          }
-        }, 2500);
+          processNFCTag(autoTag, 'NFC_URL_IPHONE');
+        }, 2500); // Beri masa 2.5 saat untuk penstabilan rangkaian Firebase
       }
     };
-    // ─── 🔥 LOGIK STRUKTUR KUIRI GURU VS IBU BAPA 🔥 ───
+
     function subscribeStudentsData() {
       let queryRef = db.collection('students');
-      
-      // LOGIK UTAMA KAU: 
-      // Jika peranan ialah 'Ibu Bapa', tapis supaya nampak rekod yang dicipta oleh uid dia sahaja.
-      // Jika 'Guru', dia akan tarik terus semua data tanpa tapis `createdBy`.
       if (CURRENT_USER.role === 'Ibu Bapa') {
         queryRef = queryRef.where('createdBy', '==', CURRENT_USER.uid);
       }
@@ -443,14 +379,12 @@ window.onload = function() {
       queryRef.onSnapshot((snapshot) => {
         ALL_STUDENTS = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         
-        // Kemaskini Dropdown Pilihan Murid
         const select = document.getElementById('sidebar-student-select');
         if(ALL_STUDENTS.length === 0) {
           select.innerHTML = '<option value="">-- Tiada Rekod --</option>';
           setActiveStudent(null);
         } else {
           select.innerHTML = ALL_STUDENTS.map(s => `<option value="${s.id}">${s.name.split(' ')[0]}</option>`).join('');
-          // Jika tiada murid dipilih lagi, automatik pilih yang pertama
           if (!ACTIVE_STUDENT_ID || !ALL_STUDENTS.some(s => s.id === ACTIVE_STUDENT_ID)) {
             setActiveStudent(ALL_STUDENTS[0].id);
           } else {
@@ -463,14 +397,13 @@ window.onload = function() {
       });
     }
 
-    // PASANG LISTENER REAL-TIME UNTUK LOG MURID TERPILIH
     let unsubscribeLogs = null;
     function setActiveStudent(studentId) {
       ACTIVE_STUDENT_ID = studentId;
       const select = document.getElementById('sidebar-student-select');
       if(select) select.value = studentId;
 
-      if(unsubscribeLogs) unsubscribeLogs(); // Tutup sub lama jika ada
+      if(unsubscribeLogs) unsubscribeLogs(); 
 
       const activeStudent = ALL_STUDENTS.find(s => s.id === studentId);
       if (!activeStudent) {
@@ -481,7 +414,6 @@ window.onload = function() {
         return;
       }
 
-      // Update UI Banner Topbar & Dashboard
       document.getElementById('topbar-badge-area').innerHTML = `<span class="badge badge-active">● TERPILIH: ${activeStudent.name.split(' ')[0]}</span>`;
       document.getElementById('dashboard-student-banner').innerHTML = `
         <div style="font-size: 11px; font-weight: 600; color: #1D9E75; text-transform: uppercase; margin-bottom: 4px;">Profil Aktif</div>
@@ -492,7 +424,6 @@ window.onload = function() {
           <span class="tag tag-amber">Motor: ${activeStudent.motorLevel}</span>
         </div>`;
 
-      // Langganan data log daripada Firestore (Susunan Terkini Ke Bawah)
       unsubscribeLogs = db.collection('logs')
         .where('studentId', '==', studentId)
         .orderBy('timestamp', 'desc')
@@ -500,7 +431,6 @@ window.onload = function() {
         .onSnapshot((snapshot) => {
           CURRENT_LOGS = snapshot.docs.map(doc => {
             const data = doc.data();
-            // Tukar serverTimestamp ke format Date JS biasa
             return {
               id: doc.id,
               ...data,
@@ -519,7 +449,6 @@ window.onload = function() {
         });
     }
 
-    // SIMPAN LOG BARU KE FIREBASE (REAL FIRESTORE APP)
     async function triggerAction(tag, label, method) {
       if(!ACTIVE_STUDENT_ID) { alert("Sila pilih atau tambah murid terlebih dahulu!"); return; }
       
@@ -537,7 +466,6 @@ window.onload = function() {
       }
     }
 
-    // TAMBAH MURID BARU (FIRESTORE DATA CREATION)
     async function addStudent(e) {
       e.preventDefault();
       showLoading(true);
@@ -549,7 +477,7 @@ window.onload = function() {
 
       try {
         const newDocRef = await db.collection('students').add({
-          createdBy: CURRENT_USER.uid, // Dikunci pada uid pendaftar
+          createdBy: CURRENT_USER.uid, 
           name,
           diagnosis,
           cognitiveLevel,
@@ -567,7 +495,6 @@ window.onload = function() {
       showLoading(false);
     }
 
-    // RENDER INTERFACE LOG JADUAL
     function renderLogTable() {
       const tbody = document.getElementById('log-table-body');
       if(CURRENT_LOGS.length === 0) {
@@ -585,7 +512,6 @@ window.onload = function() {
       }).join('');
     }
 
-    // HITUNG TOP USAGE
     function renderTopActions() {
       const counts = {};
       CURRENT_LOGS.forEach(l => { counts[l.actionLabel] = (counts[l.actionLabel] || 0) + 1; });
@@ -601,7 +527,6 @@ window.onload = function() {
       `).join('');
     }
 
-    // KAD SENARAI MURID (TAB PENGURUSAN)
     function renderStudentCards() {
       const container = document.getElementById('student-cards-container');
       if(ALL_STUDENTS.length === 0) {
@@ -617,12 +542,10 @@ window.onload = function() {
       `).join('');
     }
 
-    // SISTEM NOTIFIKASI TOAST & LOADING OVERLAY
     function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => t.style.display='none', 2500); }
     function showLoading(show) { document.getElementById('loading-screen').style.display = show ? 'flex' : 'none'; }
     function changeActiveStudent(id) { if(id) setActiveStudent(id); }
 
-    // RENDER INTERFACE GRID AAC BUTTONS
     function renderAACGrid() {
       document.getElementById('aac-buttons-container').innerHTML = AAC_BUTTONS.map(btn => `
         <button class="aac-btn" style="border-color:${btn.border}; background:${btn.bg};" onclick="triggerAction('${btn.tag}', '${btn.label}', 'Manual Touch')">
@@ -632,7 +555,51 @@ window.onload = function() {
       `).join('');
     }
 
-    // CARTA REAL-TIME CHART.JS
+    // MEMBINA JADUAL PEMETAAN DENGAN BUTANG INTERAKTIF COPY TEXT (Pilihan B)
+    function renderNFCGuideTable() {
+      const baseUrl = window.location.href.split('?')[0];
+      const tbody = document.getElementById('nfc-guide-table-body');
+      
+      tbody.innerHTML = AAC_BUTTONS.map((btn, index) => {
+        const fullIphoneUrl = `${baseUrl}?tag=${btn.tag}`;
+        return `
+          <tr style="border-bottom: 1px solid #E1F5EE;">
+            <td style="padding: 12px; font-weight: 600;">${index + 1}</td>
+            <td style="padding: 12px;">${btn.emoji} ${btn.label}</td>
+            <td style="padding: 12px;">
+              <div>
+                <span style="font-size:11px; color:#7A9B93; display:block; margin-bottom:2px;">Format Android (Text):</span>
+                <code class="code-tag" id="tag-${btn.tag}">${btn.tag}</code>
+                <button class="btn-copy" onclick="copyToClipboard('tag-${btn.tag}')">📋 Salin Teks</button>
+              </div>
+              <div style="margin-top: 8px;">
+                <span style="font-size:11px; color:#7A9B93; display:block; margin-bottom:2px;">Format iPhone (URL):</span>
+                <code class="code-tag" id="url-${btn.tag}" style="font-size:10px; color:#185FA5; background:#E5F1FD;">${btn.tag}</code>
+                <button class="btn-copy" onclick="copyIphoneUrl('${fullIphoneUrl}')">🔗 Salin URL</button>
+              </div>
+            </td>
+            <td style="padding: 12px;">
+              <button class="btn btn-outline btn-sm" onclick="triggerAction('${btn.tag}', '${btn.label}', 'Simulasi NFC')">🚀 Test Firebase</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // FUNGSI COPY TEXT KHAS
+    function copyToClipboard(elementId) {
+      const text = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("✓ Nilai tag disalin!");
+      });
+    }
+
+    function copyIphoneUrl(fullUrl) {
+      navigator.clipboard.writeText(fullUrl).then(() => {
+        showToast("✓ Pautan URL iPhone disalin!");
+      });
+    }
+
     function updateCharts() {
       const hoursData = Array(24).fill(0);
       const counts = {};
@@ -658,7 +625,6 @@ window.onload = function() {
       });
     }
 
-    // SISTEM PENGENDALIAN AUTH (SIGN UP & LOG IN)
     async function handleRegister(e) {
       e.preventDefault();
       showLoading(true);
@@ -669,12 +635,8 @@ window.onload = function() {
 
       try {
         const cred = await auth.createUserWithEmailAndPassword(email, password);
-        // Simpan peranan ke Firestore `/users`
         await db.collection('users').doc(cred.user.uid).set({
-          name,
-          email,
-          role,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          name, email, role, createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
         showToast('Akaun berjaya didaftarkan!');
       } catch (err) {
@@ -698,9 +660,7 @@ window.onload = function() {
     }
 
     function handleLogout() {
-      if(confirm("Log keluar dari sistem?")) {
-        auth.signOut();
-      }
+      if(confirm("Log keluar dari sistem?")) { auth.signOut(); }
     }
 
     function switchAuth(type) {
@@ -712,84 +672,96 @@ window.onload = function() {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       
-      const targetTab = document.getElementById(`tab-${tabId}`);
+      const targetPage = document.getElementById(`tab-${tabId}`);
       const targetNav = document.getElementById(`nav-${tabId}`);
       
-      if(targetTab) targetTab.classList.add('active');
+      if(targetPage) targetPage.classList.add('active');
       if(targetNav) targetNav.classList.add('active');
       
-      // Kemas kini nama tajuk di bar atas
-      let pageTitle = tabId.charAt(0).toUpperCase() + tabId.slice(1);
-      if(tabId === 'nfc-settings') pageTitle = "Tetapan Konfigurasi NFC";
+      let displayTitle = tabId.charAt(0).toUpperCase() + tabId.slice(1);
+      if(tabId === 'nfc-settings') displayTitle = "Tetapan Konfigurasi NFC";
+      if(tabId === 'students') displayTitle = "Pengurusan Murid";
       
-      const topbarTitle = document.getElementById('topbar-page-title');
-      if(topbarTitle) topbarTitle.innerText = pageTitle;
-      
+      document.getElementById('topbar-page-title').innerText = displayTitle;
       if(tabId === 'analysis') updateCharts();
     }
 
-// WEBNFC INTEGRATION (Fungsi diperbaiki untuk COMM_BUTTONS)
+    // INTEGRASI UNIVERSIAL HYBRID SUPPORT (PILIHAN A - GABUNGAN ANDROID & IPHONE)
     async function toggleNFCScan() {
-      if (!('NDEFReader' in window)) { alert("NFC tidak disokong pada peranti/browser ini. Sila guna Chrome Android."); return; }
       const statusText = document.getElementById('nfc-status-text');
       const btn = document.getElementById('nfc-btn');
       const panel = document.getElementById('nfc-panel-box');
 
-      if (nfcScanning) {
-        if(abortController) abortController.abort();
-        nfcScanning = false;
-        panel.classList.remove('scanning');
-        statusText.innerText = "Sedia untuk Mengimbas";
-        btn.innerText = "📡 Mula Imbas";
-      } else {
-        try {
-          abortController = new AbortController();
-          const ndef = new NDEFReader();
-          await ndef.scan({ signal: abortController.signal });
+      // Semakan Native WebNFC (Android Chrome)
+      if (typeof window !== 'undefined' && ('NDEFReader' in window)) {
+        if (nfcScanning) {
+          if(abortController) abortController.abort();
+          resetNFCUI();
+        } else {
+          try {
+            abortController = new AbortController();
+            const ndef = new NDEFReader();
+            await ndef.scan({ signal: abortController.signal });
+            
+            nfcScanning = true;
+            panel.classList.add('scanning');
+            statusText.innerText = "Sedang Mengimbas... Sila dekatkan bantal pintar.";
+            btn.innerText = "⏹ Henti Imbas";
+
+            ndef.onreading = ({ message }) => {
+              for (const record of message.records) {
+                if (record.recordType === 'text') {
+                  const decoder = new TextDecoder(record.encoding || 'utf-8');
+                  const nfcText = decoder.decode(record.data).toLowerCase().trim();
+                  processNFCTag(nfcText, 'NFC');
+                }
+              }
+            };
+            ndef.onreadingerror = () => { console.error("Gagal membaca respons dari tag NFC."); };
+          } catch (err) {
+            alert("Ralat NFC: " + err.message);
+            resetNFCUI();
+          }
+        }
+      } 
+      // Sokongan Pintar URL-Trigger (iPhone / iOS / PC / Safari)
+      else {
+        if (nfcScanning) {
+          resetNFCUI();
+        } else {
           nfcScanning = true;
           panel.classList.add('scanning');
-          statusText.innerText = "Sedang Mengimbas... Sila dekatkan tag.";
-          btn.innerText = "⏹ Henti Imbas";
-
-          ndef.onreading = ({ message }) => {
-                for (const record of message.records) {
-                    if (record.recordType === 'text') {
-                        const decoder = new TextDecoder(record.encoding || 'utf-8');
-                        const nfcText = decoder.decode(record.data).toLowerCase().trim();
-                        
-                        console.log("Tag NFC dikesan:", nfcText); // Boleh dilihat melalui Log Console
-
-                        // LOGIK PADANAN PINTAR (Diperbaiki menggunakan COMM_BUTTONS dan .id)
-                        const matchBtn = COMM_BUTTONS.find(b => {
-                            const cleanId = b.id.replace(/_/g, ' '); // tukar 'makan_minum' jadi 'makan minum'
-                            return nfcText === b.id || nfcText === cleanId || nfcText.includes(cleanId) || nfcText.includes(b.id);
-                        });
-
-                        if (matchBtn) {
-                            triggerAction(matchBtn.id, matchBtn.label, 'NFC');
-                        } else {
-                            // Jika teks dibaca dari tag tiada dalam senarai ID COMM_BUTTONS
-                            alert("⚠️ Tag dikesan tetapi tiada padanan! Nilai tag dalam cip: '" + nfcText + "'");
-                        }
-                    }
-                }
-            };
-            
-            ndef.onreadingerror = () => {
-                console.error("Gagal membaca data tag NFC.");
-            };
-
-        } catch (err) {
-          alert("Ralat NFC: " + err.message);
-          nfcScanning = false;
-          panel.classList.remove('scanning');
-          statusText.innerText = "Sedia untuk Mengimbas";
-          btn.innerText = "📡 Mula Imbas";
+          statusText.innerHTML = `
+            <span style="color: #085041; font-weight: bold;">📱 Mod Hibrid iOS Universal Aktif</span><br>
+            <small style="font-size: 11px; color: #7A9B93; display:inline-block; margin-top:4px;">
+              Sila gunakan aplikasi <strong>NFC Tools</strong> di iPhone untuk menulis pautan web ini beserta parameter tag ke cip bantal pintar.<br>
+              Uji ketukan atau rujuk jadual pada menu <strong>Tetapan NFC</strong>.
+            </small>
+          `;
+          btn.innerText = "⏹ Tutup Paparan Info";
         }
       }
     }
 
-    // EXPORT CSV UTILITY
+    // Pengendali Pengesanan Tag Berpusat
+    function processNFCTag(nfcText, methodUsed) {
+      console.log(`Tag NFC dikesan melalui [${methodUsed}]:`, nfcText);
+      const matchBtn = AAC_BUTTONS.find(b => b.tag === nfcText);
+      
+      if(matchBtn) {
+        triggerAction(matchBtn.tag, matchBtn.label, methodUsed);
+      } else {
+        alert("⚠️ Isyarat diterima tetapi tiada padanan kod! Nilai dibaca: '" + nfcText + "'");
+      }
+    }
+
+    function resetNFCUI() {
+      nfcScanning = false;
+      document.getElementById('nfc-panel-box').classList.remove('scanning');
+      document.getElementById('nfc-status-text').innerText = "Sedia untuk Mengimbas";
+      document.getElementById('nfc-btn').innerText = "📡 Mula Imbas";
+    }
+
     function downloadCSV() {
       if(CURRENT_LOGS.length === 0) { alert("Tiada data untuk dieksport."); return; }
       let csv = 'Masa,Tindakan,Kaedah\n';
@@ -801,7 +773,6 @@ window.onload = function() {
       a.click();
     }
 
-    // CLEAR CODES FROM FIRESTORE
     async function clearLogs() {
       if(!ACTIVE_STUDENT_ID) return;
       if(confirm('Padam semua sejarah log komunikasi murid ini dari Firebase? Tindakan ini tidak boleh diundur.')) {
