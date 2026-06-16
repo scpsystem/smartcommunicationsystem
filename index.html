@@ -127,7 +127,7 @@
         <div class="nav-section">Utama</div>
         <button class="nav-item active" id="nav-dashboard" onclick="switchTab('dashboard')">▤ Dashboard</button>
         <button class="nav-item" id="nav-analysis" onclick="switchTab('analysis')">📊 Analisis Data</button>
-        
+        <div class="nav-item" id="nav-nfc-settings" onclick="switchTab('nfc-settings')">⚙️ Tetapan NFC</div>
         <div class="nav-section">Urusan Profil</div>
         <button class="nav-item" id="nav-students" onclick="switchTab('students')">👥 Kemasukan Murid</button>
         
@@ -210,6 +210,77 @@
             <div class="card"><div class="card-title">📊 Kekerapan Mengikut Jam</div><canvas id="chartBar" height="180"></canvas></div>
             <div class="card"><div class="card-title">🥧 Pembahagian Jenis Komunikasi</div><canvas id="chartPie" height="180"></canvas></div>
           </div>
+          <div class="page" id="tab-nfc-settings">
+  <div class="card" style="margin-bottom: 20px;">
+    <div class="card-title">⚙️ Panduan Konfigurasi & Tetapan Tag NFC (SCP)</div>
+    <p style="color: #7A9B93; margin-bottom: 15px; font-size: 13px;">
+      Sila gunakan aplikasi <strong>NFC Tools</strong> pada telefon pintar untuk menulis data ke dalam cip bantal pintar. Pilih jenis rekod <strong>Teks (Text)</strong> dan taip nilai penanda (Tagging) tepat seperti dalam jadual di bawah:
+    </p>
+    
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <thead>
+          <tr style="background-color: #E1F5EE; color: #085041; text-align: left;">
+            <th style="padding: 12px; border-bottom: 2px solid #D8EDE7;">Bil</th>
+            <th style="padding: 12px; border-bottom: 2px solid #D8EDE7;">Fungsi Butang Komunikasi (AAC)</th>
+            <th style="padding: 12px; border-bottom: 2px solid #D8EDE7;">Nilai Penanda Wajib (Tagging)</th>
+            <th style="padding: 12px; border-bottom: 2px solid #D8EDE7;">Format Rekod NFC Tools</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid #E1F5EE;">
+            <td style="padding: 12px; font-weight: 600;">1</td>
+            <td style="padding: 12px;">🍽️ Saya nak makan / minum</td>
+            <td style="padding: 12px;"><code style="background: #F4F9FF; padding: 4px 8px; border-radius: 4px; color: #1D9E75; font-weight: 700;">saya_nak_makan</code></td>
+            <td style="padding: 12px; color: #7A9B93; font-size: 12px;">Teks (Text)</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E1F5EE;">
+            <td style="padding: 12px; font-weight: 600;">2</td>
+            <td style="padding: 12px;">🙏 Tolong saya</td>
+            <td style="padding: 12px;"><code style="background: #F4F9FF; padding: 4px 8px; border-radius: 4px; color: #1D9E75; font-weight: 700;">tolong_saya</code></td>
+            <td style="padding: 12px; color: #7A9B93; font-size: 12px;">Teks (Text)</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E1F5EE;">
+            <td style="padding: 12px; font-weight: 600;">3</td>
+            <td style="padding: 12px;">🤒 Saya sakit / tak selesa</td>
+            <td style="padding: 12px;"><code style="background: #F4F9FF; padding: 4px 8px; border-radius: 4px; color: #1D9E75; font-weight: 700;">sakit_tak_selesa</code></td>
+            <td style="padding: 12px; color: #7A9B93; font-size: 12px;">Teks (Text)</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E1F5EE;">
+            <td style="padding: 12px; font-weight: 600;">4</td>
+            <td style="padding: 12px;">🚽 Saya nak ke tandas</td>
+            <td style="padding: 12px;"><code style="background: #F4F9FF; padding: 4px 8px; border-radius: 4px; color: #1D9E75; font-weight: 700;">ke_tandas</code></td>
+            <td style="padding: 12px; color: #7A9B93; font-size: 12px;">Teks (Text)</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E1F5EE;">
+            <td style="padding: 12px; font-weight: 600;">5</td>
+            <td style="padding: 12px;">✅ Ya</td>
+            <td style="padding: 12px;"><code style="background: #F4F9FF; padding: 4px 8px; border-radius: 4px; color: #1D9E75; font-weight: 700;">ya</code></td>
+            <td style="padding: 12px; color: #7A9B93; font-size: 12px;">Teks (Text)</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E1F5EE;">
+            <td style="border-bottom: 1px solid #E1F5EE; padding: 12px; font-weight: 600;">6</td>
+            <td style="padding: 12px;">❌ Tidak</td>
+            <td style="padding: 12px;"><code style="background: #F4F9FF; padding: 4px 8px; border-radius: 4px; color: #1D9E75; font-weight: 700;">tidak</code></td>
+            <td style="padding: 12px; color: #7A9B93; font-size: 12px;">Teks (Text)</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E1F5EE;">
+            <td style="padding: 12px; font-weight: 600;">7</td>
+            <td style="padding: 12px;">🤝 Saya nak</td>
+            <td style="padding: 12px;"><code style="background: #F4F9FF; padding: 4px 8px; border-radius: 4px; color: #1D9E75; font-weight: 700;">saya_nak</code></td>
+            <td style="padding: 12px; color: #7A9B93; font-size: 12px;">Teks (Text)</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E1F5EE;">
+            <td style="padding: 12px; font-weight: 600;">8</td>
+            <td style="padding: 12px;">🚫 Saya taknak</td>
+            <td style="padding: 12px;"><code style="background: #F4F9FF; padding: 4px 8px; border-radius: 4px; color: #1D9E75; font-weight: 700;">saya_taknak</code></td>
+            <td style="padding: 12px; color: #7A9B93; font-size: 12px;">Teks (Text)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
         </div>
 
         <div id="tab-students" class="page">
@@ -277,14 +348,14 @@
     let myBarChart, myPieChart;
 
     const COMM_BUTTONS = [
-  { id:'makan_minum', label:'Saya nak makan / minum', icon:'🍽️', desc:'Lapar atau dahaga',  priority:false },
-  { id:'saya_nak',    label:'Saya nak',                icon:'🙋', desc:'Keinginan umum',    priority:false },
-  { id:'saya_taknak', label:'Saya taknak',             icon:'🙅', desc:'Menolak',           priority:false },
-  { id:'tolong',      label:'Tolong saya',             icon:'🆘', desc:'Perlu bantuan',     priority:true  },
-  { id:'ya',          label:'Ya',                      icon:'✅', desc:'Bersetuju',         priority:false },
-  { id:'tidak',       label:'Tidak',                   icon:'❌', desc:'Tidak bersetuju',   priority:false },
-  { id:'tandas',      label:'Saya nak ke tandas',      icon:'🚽', desc:'Keperluan tandas',  priority:false },
-  { id:'sakit',       label:'Saya sakit / tak selesa', icon:'🤒', desc:'Tidak sihat',       priority:true  },
+  { tag:'makan_minum', label:'Saya nak makan / minum', icon:'🍽️', desc:'Lapar atau dahaga',  priority:false },
+  { tag:'saya_nak',    label:'Saya nak',                icon:'🙋', desc:'Keinginan umum',    priority:false },
+  { tag:'saya_taknak', label:'Saya taknak',             icon:'🙅', desc:'Menolak',           priority:false },
+  { tag:'tolong',      label:'Tolong saya',             icon:'🆘', desc:'Perlu bantuan',     priority:true  },
+  { tag:'ya',          label:'Ya',                      icon:'✅', desc:'Bersetuju',         priority:false },
+  { tag:'tidak',       label:'Tidak',                   icon:'❌', desc:'Tidak bersetuju',   priority:false },
+  { tag:'tandas',      label:'Saya nak ke tandas',      icon:'🚽', desc:'Keperluan tandas',  priority:false },
+  { tag:'sakit',       label:'Saya sakit / tak selesa', icon:'🤒', desc:'Tidak sihat',       priority:true  },
 ];
 const TTS = {
   makan_minum:'Saya nak makan atau minum.',
@@ -341,21 +412,23 @@ const TTS = {
 
     // RENDER INTERFACES PEMULA
 window.onload = function() {
-  renderAACGrid();
+      // Panggil fungsi render asal kau
+      renderAACGrid();
+      if (typeof updateCharts === 'function') updateCharts();
 
-  // Logik khas untuk iPhone / Scan URL luar
-  const urlParams = new URLSearchParams(window.location.search);
-  const autoTag = urlParams.get('tag');
-  if (autoTag) {
-    const matchBtn = COMM_BUTTONS.find(b => b.id === autoTag);
-    if (matchBtn) {
-      // Tunggu Firebase bersedia sekejap kemudian rekod data
-      setTimeout(() => {
-        triggerAction(matchBtn.id, matchBtn.label, 'NFC_URL');
-      }, 2000);
-    }
-  }
-};
+      // LOGIK KHAS SOKONGAN IPHONE (Membaca parameter URL bila tag di-tap luar talian)
+      const urlParams = new URLSearchParams(window.location.search);
+      const autoTag = urlParams.get('tag');
+      
+      if (autoTag) {
+        // Tunggu sistem Firebase auth stabil dalam 2.5 saat, kemudian hantar data automatik
+        setTimeout(() => {
+          if (typeof processNFCTag === 'function') {
+            processNFCTag(autoTag, 'NFC_URL_IPHONE');
+          }
+        }, 2500);
+      }
+    };
     // ─── 🔥 LOGIK STRUKTUR KUIRI GURU VS IBU BAPA 🔥 ───
     function subscribeStudentsData() {
       let queryRef = db.collection('students');
@@ -638,9 +711,20 @@ window.onload = function() {
     function switchTab(tabId) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      document.getElementById(`tab-${tabId}`).classList.add('active');
-      document.getElementById(`nav-${tabId}`).classList.add('active');
-      document.getElementById('topbar-page-title').innerText = tabId.charAt(0).toUpperCase() + tabId.slice(1);
+      
+      const targetTab = document.getElementById(`tab-${tabId}`);
+      const targetNav = document.getElementById(`nav-${tabId}`);
+      
+      if(targetTab) targetTab.classList.add('active');
+      if(targetNav) targetNav.classList.add('active');
+      
+      // Kemas kini nama tajuk di bar atas
+      let pageTitle = tabId.charAt(0).toUpperCase() + tabId.slice(1);
+      if(tabId === 'nfc-settings') pageTitle = "Tetapan Konfigurasi NFC";
+      
+      const topbarTitle = document.getElementById('topbar-page-title');
+      if(topbarTitle) topbarTitle.innerText = pageTitle;
+      
       if(tabId === 'analysis') updateCharts();
     }
 
