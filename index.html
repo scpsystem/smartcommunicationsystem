@@ -605,27 +605,48 @@
       const hoursData = Array(24).fill(0);
       const counts = {};
       CURRENT_LOGS.forEach(l => { 
-        hoursData[l.timestamp.getHours()]++;
-        counts[l.actionLabel] = (counts[l.actionLabel] || 0) + 1;
-      });
+        if (l.timestamp && typeof l.timestamp.getHours === 'function') {
+      hoursData[l.timestamp.getHours()]++;
+    }
+    counts[l.actionLabel] = (counts[l.actionLabel] || 0) + 1;
+  });
       const activeHours = hoursData.slice(7, 20);
       const hourLabels = Array.from({length: 13}, (_, i) => `${i+7}:00`);
 
-      if(myBarChart) myBarChart.destroy();
-      myBarChart = new Chart(document.getElementById('chartBar'), {
-        type: 'bar',
-        data: { labels: hourLabels, datasets: [{ label: 'Kekerapan', data: activeHours, backgroundColor: '#1D9E75', borderRadius: 4 }] },
-        options: { responsive: true }
-      });
+      if(myBarChart) { myBarChart.destroy(); }
+  const ctxBar = document.getElementById('chartBar');
+  if (ctxBar) {
+    myBarChart = new Chart(ctxBar, {
+      type: 'bar',
+      data: { 
+        labels: hourLabels, 
+        datasets: [{ 
+          label: 'Kekerapan', 
+          data: activeHours, 
+          backgroundColor: '#1D9E75', 
+          borderRadius: 4 
+        }] 
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
 
-      if(myPieChart) myPieChart.destroy();
-      myPieChart = new Chart(document.getElementById('chartPie'), {
-        type: 'pie',
-        data: { labels: Object.keys(counts), datasets: [{ data: Object.values(counts), backgroundColor: ['#1D9E75','#185FA5','#BA7517','#D85A30','#534AB7'] }] },
-        options: { responsive: true }
-      });
-    }
-
+      if(myPieChart) { myPieChart.destroy(); }
+  const ctxPie = document.getElementById('chartPie');
+  if (ctxPie && Object.keys(counts).length > 0) {
+    myPieChart = new Chart(ctxPie, {
+      type: 'pie',
+      data: { 
+        labels: Object.keys(counts), 
+        datasets: [{ 
+          data: Object.values(counts), 
+          backgroundColor: ['#1D9E75','#185FA5','#BA7517','#D85A30','#534AB7'] 
+        }] 
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+  }
+}
     async function handleRegister(e) {
       e.preventDefault();
       showLoading(true);
